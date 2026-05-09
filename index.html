@@ -649,6 +649,79 @@ footer a{color:var(--rosem)}
 }
 
 </style>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyByYptJ57N4G9EhHpDpSzSEgfemKS6p_2TY",
+  authDomain: "eduarda-sobrancelhas.firebaseapp.com",
+  databaseURL: "https://eduarda-sobrancelhas-default-rtdb.firebaseio.com",
+  projectId: "eduarda-sobrancelhas",
+  storageBucket: "eduarda-sobrancelhas.firebasestorage.app",
+  messagingSenderId: "422427631381",
+  appId: "1:422427631381:web:6fc6b3b1d81e065d7b531c"
+};
+firebase.initializeApp(firebaseConfig);
+const fbDB = firebase.database();
+
+/* ── PROXY localStorage → Firebase ──
+   Mantém compatibilidade total com todo o código existente.
+   localStorage continua funcionando como cache local,
+   mas tudo é sincronizado com Firebase em tempo real. */
+(function(){
+  // Chaves que devem sincronizar com Firebase
+  var FB_KEYS = ['bookings','clients','caixa','blocked','config','contato','customSvcs','allPics','heroPhoto','profilePhoto','aviso','cor','grad','txt','layoutTextos'];
+  
+  var origSetItem = localStorage.setItem.bind(localStorage);
+  var origGetItem = localStorage.getItem.bind(localStorage);
+  var origRemoveItem = localStorage.removeItem.bind(localStorage);
+  
+  // Salva no Firebase quando localStorage é alterado
+  localStorage.setItem = function(key, value){
+    origSetItem(key, value);
+    if(FB_KEYS.indexOf(key) >= 0){
+      try{
+        fbDB.ref('data/' + key).set(value);
+      }catch(e){console.warn('FB save fail',key,e);}
+    }
+  };
+  
+  localStorage.removeItem = function(key){
+    origRemoveItem(key);
+    if(FB_KEYS.indexOf(key) >= 0){
+      try{
+        fbDB.ref('data/' + key).remove();
+      }catch(e){}
+    }
+  };
+  
+  // Carrega do Firebase ao iniciar e escuta atualizações
+  window.addEventListener('DOMContentLoaded', function(){
+    FB_KEYS.forEach(function(key){
+      fbDB.ref('data/' + key).on('value', function(snapshot){
+        var val = snapshot.val();
+        if(val !== null && val !== undefined){
+          // Atualizar localStorage SEM acionar o set (para não criar loop)
+          origSetItem(key, val);
+          // Re-renderizar coisas visíveis se necessário
+          if(typeof renderCal === 'function')renderCal();
+          if(typeof renderGal === 'function' && key === 'allPics')renderGal();
+          if(key === 'heroPhoto'){
+            var hi = document.getElementById('heroImg');
+            if(hi && val) hi.style.backgroundImage = 'url(' + val + ')';
+          }
+          if(key === 'profilePhoto'){
+            var si = document.getElementById('sobreImg');
+            if(si && val) si.src = val;
+          }
+        }
+      });
+    });
+  });
+})();
+</script>
 </head>
 <body>
 <div class="site-wrap">
