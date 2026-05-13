@@ -167,6 +167,10 @@ section{padding:76px 22px}
 .gal-ph span{font-size:9px;letter-spacing:1px;text-transform:uppercase}
 .gal-tap{position:absolute;inset:0;background:rgba(194,24,91,.48);opacity:0;display:flex;align-items:center;justify-content:center;transition:opacity .3s;font-size:22px;color:#fff}
 .gal-cell:hover .gal-tap{opacity:1}
+/* Botão de deletar foto (só visível para admin) */
+.gal-del{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;background:rgba(198,40,40,.92);color:#fff;border:none;font-size:13px;cursor:pointer;z-index:5;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.3);transition:transform .15s}
+.gal-del:hover{transform:scale(1.12);background:#c62828}
+.arc-thumb{position:relative}
 /* Archive pagination */
 .gal-archive{margin-top:22px}
 .arc-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:13px;text-align:center}
@@ -281,14 +285,23 @@ footer a{color:var(--rosem)}
 /* ADMIN */
 .adm-trigger{position:fixed;bottom:18px;right:18px;z-index:700;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.07);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,.18);font-size:12px;letter-spacing:-1px;line-height:1;padding-bottom:2px;transition:background .2s}
 .adm-trigger:hover{background:rgba(0,0,0,.13);color:rgba(0,0,0,.4)}
-.adm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1500;align-items:flex-end;justify-content:center}
+.adm-overlay{display:none;position:fixed;inset:0;background:rgba(35,15,25,.18);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:1500;align-items:flex-end;justify-content:center}
 .adm-overlay.on{display:flex}
-.adm-panel{background:#fff;border-radius:26px 26px 0 0;width:100%;max-width:520px;overflow:hidden;animation:panelUp .33s cubic-bezier(.16,1,.3,1)}
-.adm-panel.logged{overflow-y:auto;max-height:93vh;max-height:93svh;}
-@media(min-width:600px){.adm-panel{border-radius:26px;margin-bottom:18px;max-width:540px}}
-@media(min-width:900px){.adm-panel{max-width:560px}}
+.adm-panel{background:#fff;width:100%;max-width:520px;overflow:hidden;animation:panelUp .33s cubic-bezier(.16,1,.3,1);
+  /* MOBILE: tela cheia para não cortar nada e não mostrar fundo */
+  height:100vh;height:100svh;border-radius:0;
+}
+.adm-panel.logged{overflow-y:auto;}
+@media(min-width:600px){
+  .adm-panel{border-radius:22px;margin:auto;max-width:680px;height:auto;max-height:92vh;max-height:92svh;box-shadow:0 24px 70px rgba(80,20,50,.22);}
+  .adm-overlay{align-items:center;padding:24px;}
+  .adm-overlay.on .adm-panel{border-radius:22px;}
+}
+@media(min-width:900px){.adm-panel{max-width:760px}}
+@media(min-width:1200px){.adm-panel{max-width:860px}}
 @keyframes panelUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.adm-handle{width:32px;height:4px;background:#e0d0d8;border-radius:2px;margin:13px auto 17px}
+.adm-handle{width:32px;height:4px;background:#e0d0d8;border-radius:2px;margin:13px auto 17px;display:none}
+@media(min-width:600px){.adm-handle{display:block}}
 .adm-inner{padding:0 18px 30px}
 .adm-login h2{font-family:'Bodoni Moda',serif;font-size:1.35rem;font-weight:700;margin-bottom:4px}
 .adm-login p{font-size:13px;color:var(--gray);margin-bottom:16px}
@@ -309,10 +322,19 @@ footer a{color:var(--rosem)}
   overflow:hidden!important;
   pointer-events:none!important;
 }
-.adm-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.adm-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;
+  position:sticky;top:0;background:#fff;z-index:10;padding:14px 0 10px;
+  border-bottom:1px solid #f0e8ec;margin-top:-14px;}
 .adm-top h2{font-family:'Bodoni Moda',serif;font-size:1.25rem;font-weight:700}
 .btn-exit{background:none;border:1.5px solid #e0d0d8;color:var(--gray);padding:6px 14px;border-radius:50px;font-size:12px;cursor:pointer}
+.btn-close-adm{background:var(--rosep);border:none;color:var(--rose);width:34px;height:34px;border-radius:50%;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.btn-close-adm:hover{background:var(--rose);color:#fff}
 .adm-sec{background:var(--nude);border-radius:15px;padding:13px;margin-bottom:11px}
+@media(min-width:768px){
+  /* No PC, layout em 2 colunas para tabs que têm muitas seções (Config) */
+  #tabCfg.on{display:grid;grid-template-columns:1fr 1fr;gap:11px;align-items:start}
+  #tabCfg.on .adm-sec{margin-bottom:0}
+}
 .adm-sec-hdr{display:flex;align-items:flex-start;gap:9px;margin-bottom:9px}
 .adm-sec-ico{font-size:17px;flex-shrink:0;margin-top:1px}
 .adm-sec-ttl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--rose)}
@@ -395,21 +417,33 @@ footer a{color:var(--rosem)}
 .cli-act-msg{display:inline-flex;align-items:center;gap:4px;background:var(--rosep);color:var(--rose);padding:6px 11px;border-radius:50px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:Outfit,sans-serif}
 
 /* SUB-DRAWER: painel que desliza por cima do painel principal */
-.sub-overlay{position:fixed;inset:0;z-index:1100;pointer-events:none;background:rgba(0,0,0,0);transition:background .25s}
-.sub-overlay.on{pointer-events:all;background:rgba(0,0,0,.35)}
+.sub-overlay{position:fixed;inset:0;z-index:1600;pointer-events:none;background:rgba(0,0,0,0);transition:background .25s}
+.sub-overlay.on{pointer-events:all;background:rgba(35,15,25,.14);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
 .adm-sub{
   position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);
   width:100%;max-width:560px;
   background:#fff;border-radius:22px 22px 0 0;
-  padding:0 0 env(safe-area-inset-bottom,16px);
-  max-height:90vh;overflow-y:auto;overflow-x:hidden;
-  z-index:1200;
-  box-shadow:0 -8px 40px rgba(0,0,0,.18);
+  padding:0 0 calc(env(safe-area-inset-bottom,16px) + 24px);
+  max-height:92vh;max-height:92svh;overflow-y:auto;overflow-x:hidden;
+  z-index:1700;  /* acima do painel admin (1500) e do sub-overlay (1600) */
+  box-shadow:0 -8px 40px rgba(0,0,0,.25);
   transition:transform .32s cubic-bezier(.32,1,.22,1);
   -webkit-overflow-scrolling:touch;
 }
 .adm-sub.on{transform:translateX(-50%) translateY(0)}
-.adm-sub-inner{padding:6px 20px 30px}
+@media(min-width:600px){
+  .adm-sub{bottom:auto;top:50%;left:50%;
+    transform:translate(-50%,calc(-50% + 30px));
+    opacity:0;pointer-events:none;
+    border-radius:20px;max-width:600px;max-height:86vh;
+    box-shadow:0 24px 70px rgba(80,20,50,.28);
+    transition:transform .3s cubic-bezier(.32,1,.22,1),opacity .25s;
+    padding-bottom:24px;
+  }
+  .adm-sub.on{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
+}
+@media(min-width:900px){.adm-sub{max-width:680px}}
+.adm-sub-inner{padding:6px 20px 40px}
 .adm-sub-handle{width:40px;height:4px;background:#e0d0d8;border-radius:4px;margin:12px auto 16px}
 .adm-back{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--gray);font-size:13px;cursor:pointer;font-family:Outfit,sans-serif;margin-bottom:14px;padding:4px 0;font-weight:500}
 .adm-back:hover{color:var(--rose)}
@@ -595,17 +629,50 @@ footer a{color:var(--rosem)}
 .grad-save{background:var(--rose);color:#fff}
 .grad-reset{background:#fff;color:var(--gray);border:1.5px solid #e0d0d8!important}
 
-/* Edit-mode fab */
-.edit-fab{position:fixed;top:70px;right:14px;z-index:1600;background:var(--rose);color:#fff;border:none;border-radius:50px;padding:9px 15px;font-size:12px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif;box-shadow:0 4px 16px rgba(194,24,91,.4);display:none;align-items:center;gap:6px;transition:transform .2s}
-.edit-fab.visible{display:flex}
-.edit-fab.active{background:#0d0007}
+/* Edit-mode fab — botão para sair do modo edição visual */
+.edit-fab{
+  position:fixed;top:14px;left:14px;z-index:1700;
+  background:linear-gradient(135deg,#c2185b,#e91e63);color:#fff;border:none;border-radius:50px;
+  padding:11px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif;
+  box-shadow:0 6px 22px rgba(194,24,91,.55);
+  display:none;align-items:center;gap:7px;
+  transition:transform .2s, box-shadow .2s;
+  animation:hdrPulse 2.4s ease-in-out infinite;
+}
+.edit-fab.visible{display:inline-flex}
+.edit-fab.active{background:linear-gradient(135deg,#0d0007,#3a0018);animation:none}
+.edit-fab:hover{transform:scale(1.05);box-shadow:0 8px 28px rgba(194,24,91,.7)}
 .edit-fab svg{width:14px;height:14px;fill:#fff;flex-shrink:0}
+@media(min-width:768px){.edit-fab{top:18px;left:18px;padding:12px 22px;font-size:14px}}
 
 /* ═══ BOTÃO WA RÁPIDO NOS CARDS ═══ */
 .bk-act-wa{background:#25D366;color:#fff;display:inline-flex;align-items:center;gap:5px}
 .bk-act-wa svg{width:13px;height:13px;fill:#fff;flex-shrink:0}
 
-/* ═══ BOTÕES DE IMPRESSÃO ═══ */
+/* ═══ MODAL CONCLUIR ═══ */
+.done-modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3200;align-items:center;justify-content:center;padding:20px}
+.done-modal-ov.on{display:flex;animation:fadeIn .2s}
+.done-modal-box{background:#fff;border-radius:20px;padding:22px 20px 22px;width:100%;max-width:420px;animation:panelUp .25s cubic-bezier(.16,1,.3,1)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ═══ MODAL CONFIRMAÇÃO GENÉRICO ═══ */
+.confirm-modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3300;align-items:center;justify-content:center;padding:20px}
+.confirm-modal-ov.on{display:flex;animation:fadeIn .2s}
+.confirm-modal-box{background:#fff;border-radius:20px;padding:22px 20px;width:100%;max-width:380px;text-align:center;animation:panelUp .25s cubic-bezier(.16,1,.3,1)}
+.confirm-modal-box h3{font-family:'Bodoni Moda',serif;font-size:1.15rem;margin-bottom:8px;color:#c62828}
+.confirm-modal-box p{font-size:13px;color:var(--gray);margin-bottom:14px;line-height:1.5}
+.confirm-modal-box .cm-actions{display:flex;gap:8px}
+.confirm-modal-box .cm-cancel{flex:1;padding:11px;background:#fff;color:var(--gray);border:1.5px solid #e0d0d8;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif}
+.confirm-modal-box .cm-confirm{flex:1;padding:11px;background:#c62828;color:#fff;border:none;border-radius:50px;font-size:13px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif}
+.confirm-modal-box input{width:100%;padding:10px 12px;border:1.5px solid #ef9a9a;border-radius:9px;font-size:13px;font-family:Outfit,sans-serif;outline:none;margin-bottom:10px;text-align:center}
+
+/* ═══ EDITOR DE COR/GRAD UNIFICADO ═══ */
+.edit-targets{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
+.edit-target-btn{display:flex;flex-direction:column;align-items:flex-start;padding:11px 12px;background:#fff;border:1.5px solid #ead8e0;border-radius:12px;cursor:pointer;font-family:Outfit,sans-serif;text-align:left;transition:all .2s;gap:6px}
+.edit-target-btn:hover{border-color:var(--rose);background:var(--rosep)}
+.edit-target-preview{width:100%;height:36px;border-radius:8px;border:1px solid rgba(0,0,0,.06)}
+.edit-target-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink)}
+.edit-target-sub{font-size:10px;color:var(--lgray)}
 .print-btns{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
 .btn-print{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:50px;border:1.5px solid #ead8e0;background:#fff;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer;font-family:Outfit,sans-serif;transition:all .2s}
 .btn-print:hover{background:var(--rosep);border-color:var(--rose);color:var(--rose)}
@@ -666,60 +733,148 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const fbDB = firebase.database();
 
-/* ── PROXY localStorage → Firebase ──
-   Mantém compatibilidade total com todo o código existente.
-   localStorage continua funcionando como cache local,
-   mas tudo é sincronizado com Firebase em tempo real. */
+/* ── SYNC localStorage ↔ Firebase v2 (robusto, anti-loop, prefix-friendly)
+   • Lista explícita de chaves + suporte a prefixos (clr_, grad_, lt_, cfg, etc)
+   • Flag _syncing previne loops entre listener e save
+   • Carrega TUDO de uma vez ANTES de renderizar nada → evita estado vazio
+   • Debounce nos writes para evitar burst de operações em rajadas */
+window.FB_READY = false;
+window.FB_PENDING = []; // operações antes do ready
 (function(){
-  // Chaves que devem sincronizar com Firebase
-  var FB_KEYS = ['bookings','clients','caixa','blocked','config','contato','customSvcs','allPics','heroPhoto','profilePhoto','aviso','cor','grad','txt','layoutTextos'];
-  
+  // Chaves exatas que sincronizam
+  var FB_KEYS_EXACT = [
+    'bookings','clients','caixa','blocked','config','contato','customSvcs',
+    'allPics','heroPhoto','profilePhoto','aviso','avisoOn','extras',
+    'cfgDur','cfgBuf','cfgMax','cfgSlots','blockedDays',
+    'admPw','cxLastDate','customClearedDefaults'
+  ];
+  // Prefixos que sincronizam (qualquer chave que começa com)
+  var FB_PREFIXES = ['clr_','grad_','lt_','txt_'];
+
+  function shouldSync(key){
+    if(FB_KEYS_EXACT.indexOf(key) >= 0) return true;
+    for(var i=0;i<FB_PREFIXES.length;i++){
+      if(key.indexOf(FB_PREFIXES[i]) === 0) return true;
+    }
+    return false;
+  }
+
+  // Sanitiza chave para path do Firebase (não pode ter . # $ [ ] /)
+  function fbPath(key){
+    return 'data/' + key.replace(/[.#$\[\]\/]/g,'_');
+  }
+
   var origSetItem = localStorage.setItem.bind(localStorage);
   var origGetItem = localStorage.getItem.bind(localStorage);
   var origRemoveItem = localStorage.removeItem.bind(localStorage);
-  
-  // Salva no Firebase quando localStorage é alterado
-  localStorage.setItem = function(key, value){
-    origSetItem(key, value);
-    if(FB_KEYS.indexOf(key) >= 0){
-      try{
-        fbDB.ref('data/' + key).set(value);
-      }catch(e){console.warn('FB save fail',key,e);}
+
+  // Flag para silenciar saves vindos do próprio sync
+  window._fbSyncing = false;
+  // Debounce por chave
+  var debounceTimers = {};
+
+  function pushToFirebase(key, value){
+    if(!window.FB_READY){
+      window.FB_PENDING.push(['set',key,value]);
+      return;
     }
+    clearTimeout(debounceTimers[key]);
+    debounceTimers[key] = setTimeout(function(){
+      try{
+        fbDB.ref(fbPath(key)).set(value);
+      }catch(e){console.warn('[FB] save fail',key,e);}
+    }, 250);
+  }
+  function removeFromFirebase(key){
+    if(!window.FB_READY){
+      window.FB_PENDING.push(['del',key]);
+      return;
+    }
+    clearTimeout(debounceTimers[key]);
+    try{ fbDB.ref(fbPath(key)).remove(); }catch(e){}
+  }
+
+  localStorage.setItem = function(key, value){
+    origSetItem(key, String(value));
+    if(window._fbSyncing) return;       // veio do listener, não devolve
+    if(shouldSync(key)) pushToFirebase(key, String(value));
   };
-  
   localStorage.removeItem = function(key){
     origRemoveItem(key);
-    if(FB_KEYS.indexOf(key) >= 0){
-      try{
-        fbDB.ref('data/' + key).remove();
-      }catch(e){}
-    }
+    if(window._fbSyncing) return;
+    if(shouldSync(key)) removeFromFirebase(key);
   };
-  
-  // Carrega do Firebase ao iniciar e escuta atualizações
-  window.addEventListener('DOMContentLoaded', function(){
-    FB_KEYS.forEach(function(key){
-      fbDB.ref('data/' + key).on('value', function(snapshot){
-        var val = snapshot.val();
-        if(val !== null && val !== undefined){
-          // Atualizar localStorage SEM acionar o set (para não criar loop)
-          origSetItem(key, val);
-          // Re-renderizar coisas visíveis se necessário
-          if(typeof renderCal === 'function')renderCal();
-          if(typeof renderGal === 'function' && key === 'allPics')renderGal();
-          if(key === 'heroPhoto'){
-            var hi = document.getElementById('heroImg');
-            if(hi && val) hi.style.backgroundImage = 'url(' + val + ')';
-          }
-          if(key === 'profilePhoto'){
-            var si = document.getElementById('sobreImg');
-            if(si && val) si.src = val;
-          }
-        }
-      });
+
+  // ── Boot: 1) baixar snapshot inteiro de data/, 2) popular localStorage, 3) ligar listeners
+  fbDB.ref('data').once('value', function(snap){
+    var all = snap.val() || {};
+    window._fbSyncing = true;
+    Object.keys(all).forEach(function(k){
+      var v = all[k];
+      if(v !== null && v !== undefined) origSetItem(k, String(v));
     });
+    window._fbSyncing = false;
+    window.FB_READY = true;
+
+    // Drenar fila pendente
+    var pending = window.FB_PENDING.slice(); window.FB_PENDING = [];
+    pending.forEach(function(p){
+      if(p[0]==='set') pushToFirebase(p[1],p[2]);
+      else if(p[0]==='del') removeFromFirebase(p[1]);
+    });
+
+    // Dispara evento para o app saber que pode renderizar com dados frescos
+    document.dispatchEvent(new Event('fb-ready'));
+
+    // Listener contínuo: qualquer mudança vinda de outro device
+    fbDB.ref('data').on('child_changed', function(ch){
+      var key = ch.key, val = ch.val();
+      window._fbSyncing = true;
+      origSetItem(key, String(val));
+      window._fbSyncing = false;
+      reRender(key);
+    });
+    fbDB.ref('data').on('child_added', function(ch){
+      var key = ch.key, val = ch.val();
+      if(origGetItem(key) === String(val)) return;
+      window._fbSyncing = true;
+      origSetItem(key, String(val));
+      window._fbSyncing = false;
+      reRender(key);
+    });
+    fbDB.ref('data').on('child_removed', function(ch){
+      var key = ch.key;
+      window._fbSyncing = true;
+      origRemoveItem(key);
+      window._fbSyncing = false;
+      reRender(key);
+    });
+  }, function(err){
+    console.error('[FB] boot fail',err);
+    window.FB_READY = true; // libera app mesmo offline
+    document.dispatchEvent(new Event('fb-ready'));
   });
+
+  function reRender(key){
+    try{
+      if(typeof renderCal === 'function' && (key==='bookings'||key==='blockedDays'||key.indexOf('cfg')===0)) renderCal();
+      if(typeof renderGal === 'function' && key === 'allPics') { if(window.reloadAllPics) reloadAllPics(); renderGal(); }
+      if(typeof updateBadge === 'function' && key === 'bookings') updateBadge();
+      if(key === 'heroPhoto'){
+        var hi = document.getElementById('heroImg');
+        var v = origGetItem('heroPhoto');
+        if(hi && v) hi.style.backgroundImage = 'url(' + v + ')';
+      }
+      if(key === 'profilePhoto'){
+        var si = document.getElementById('sobreImg');
+        var v = origGetItem('profilePhoto');
+        if(si && v) si.src = v;
+      }
+      if(key.indexOf('lt_') === 0 && typeof loadAllLayoutTextos === 'function') loadAllLayoutTextos();
+      if(key.indexOf('clr_') === 0 && typeof loadColors === 'function') loadColors();
+      if(key.indexOf('grad_') === 0 && typeof loadGradients === 'function') loadGradients();
+    }catch(e){console.warn('[FB] reRender',key,e);}
+  }
 })();
 </script>
 </head>
@@ -936,7 +1091,13 @@ const fbDB = firebase.database();
     </div>
 <template id="admEditTemplate">
     <div class="adm-inner adm-edit" id="admEdit" style="display:none">
-      <div class="adm-top"><h2>🐆 Painel</h2><button class="btn-exit" onclick="doLogout()">Sair</button></div>
+      <div class="adm-top">
+        <h2>🐆 Painel</h2>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn-exit" onclick="doLogout()" title="Encerrar sessão">Sair</button>
+          <button class="btn-close-adm" onclick="closeAdm()" title="Fechar painel (ESC)" aria-label="Fechar">✕</button>
+        </div>
+      </div>
       <!-- ABAS -->
       <div class="adm-tabs-wrap"><div class="adm-tabs" id="admTabsScroll">
         <button class="adm-tab act" onclick="switchTab('tabDash',this)">📊 Dashboard</button>
@@ -1093,13 +1254,19 @@ const fbDB = firebase.database();
           <div class="adm-sec-hdr"><span class="adm-sec-ico">📸</span><div><div class="adm-sec-ttl">Fotos & Galeria</div></div></div>
           <button class="adm-btn" onclick="trigF('fPerfil')"><span class="adm-btn-ico">🌸</span><div class="adm-btn-txt"><span class="adm-btn-lbl">Trocar foto de perfil</span></div></button>
           <button class="adm-btn" onclick="trigF('fHero')"><span class="adm-btn-ico">🖼️</span><div class="adm-btn-txt"><span class="adm-btn-lbl">Trocar foto do hero</span></div></button>
-          <button class="adm-btn" onclick="trigF('fGal')"><span class="adm-btn-ico">📷</span><div class="adm-btn-txt"><span class="adm-btn-lbl">Adicionar fotos</span></div></button>
-          <button class="adm-btn" onclick="clearGal()"><span class="adm-btn-ico">🗑️</span><div class="adm-btn-txt"><span class="adm-btn-lbl">Limpar galeria</span></div></button>
+          <button class="adm-btn" onclick="trigF('fGal')"><span class="adm-btn-ico">📷</span><div class="adm-btn-txt"><span class="adm-btn-lbl">Adicionar fotos</span><span class="adm-btn-sub">Veja a galeria no site — clique no 🗑️ para remover individualmente</span></div></button>
+          <button class="adm-btn" onclick="restaurarFotosPadrao()"><span class="adm-btn-ico">🌸</span><div class="adm-btn-txt"><span class="adm-btn-lbl">Restaurar fotos padrão</span><span class="adm-btn-sub">Volta as fotos iniciais</span></div></button>
+          <button class="adm-btn" onclick="clearGal()" style="border-color:rgba(198,40,40,.2)"><span class="adm-btn-ico">🗑️</span><div class="adm-btn-txt"><span class="adm-btn-lbl" style="color:#c62828">Limpar TODA a galeria</span><span class="adm-btn-sub">Remove todas as fotos (com confirmação)</span></div></button>
         </div>
         <div class="adm-sec">
           <div class="adm-sec-hdr"><span class="adm-sec-ico">📱</span><div><div class="adm-sec-ttl">Contato & Acesso</div><div class="adm-sec-desc">Dados de contato e segurança</div></div></div>
           <button class="adm-btn" onclick="showSub('subContato')"><span class="adm-btn-ico">📱</span><div class="adm-btn-txt"><span class="adm-btn-lbl">WhatsApp & PIX</span><span class="adm-btn-sub">Número e chave de pagamento</span></div></button>
           <button class="adm-btn" onclick="showSub('subPw')"><span class="adm-btn-ico">🔒</span><div class="adm-btn-txt"><span class="adm-btn-lbl">Alterar senha</span></div></button>
+        </div>
+        <div class="adm-sec" style="border:1.5px solid #ffcdd2;background:#fff8f8">
+          <div class="adm-sec-hdr"><span class="adm-sec-ico">🧹</span><div><div class="adm-sec-ttl" style="color:#c62828">Limpeza de dados</div><div class="adm-sec-desc">Use com cuidado — ações com confirmação</div></div></div>
+          <button class="adm-btn" onclick="limparAgendamentosCancelados()" style="border-color:rgba(198,40,40,.15)"><span class="adm-btn-ico">🗑️</span><div class="adm-btn-txt"><span class="adm-btn-lbl">Limpar cancelados e recusados</span><span class="adm-btn-sub">Mantém os pendentes e confirmados</span></div></button>
+          <button class="adm-btn" onclick="limparTodosAgendamentos()" style="border-color:rgba(198,40,40,.3);background:#fff3f3"><span class="adm-btn-ico">⚠️</span><div class="adm-btn-txt"><span class="adm-btn-lbl" style="color:#c62828">Limpar TODOS os agendamentos</span><span class="adm-btn-sub">Apaga tudo (com confirmação)</span></div></button>
         </div>
       </div>
 
@@ -1125,14 +1292,35 @@ const fbDB = firebase.database();
   <div class="adm-sub-inner">
       <button class="adm-back" onclick="closeSub()">‹ Voltar</button>
       <h3>Configurar Agenda</h3>
-      <p class="adm-sub-desc">Os horários são calculados com base na duração + intervalo configurados abaixo.</p>
-      <div class="set-row"><div><div class="set-lbl">Duração de cada sessão</div><div class="set-sub">Padrão: 1 hora</div></div><div class="set-ctrl"><select id="cfgDur" onchange="saveCfg()"><option value="60" selected>1 hora</option><option value="80">1h20min</option><option value="90">1h30min</option><option value="120">2 horas</option></select></div></div>
-      <div class="set-row"><div><div class="set-lbl">Intervalo entre clientes</div><div class="set-sub">Descanso entre atendimentos</div></div><div class="set-ctrl"><select id="cfgBuf" onchange="saveCfg()"><option value="0">Nenhum</option><option value="10">10 min</option><option value="15" selected>15 min</option><option value="30">30 min</option></select></div></div>
-      <div class="set-row"><div><div class="set-lbl">Máx. de clientes por dia</div><div class="set-sub">Ao atingir, o dia aparece como "Lotado"</div></div><div class="set-ctrl"><input type="number" id="cfgMax" value="6" min="1" max="20" onchange="saveCfg()" style="width:66px"></div></div>
+      <p class="adm-sub-desc">Os horários são calculados automaticamente com base nas opções abaixo.</p>
+      <div class="set-row"><div><div class="set-lbl">Duração de cada sessão</div><div class="set-sub">Quanto tempo dura um atendimento</div></div><div class="set-ctrl"><select id="cfgDur" onchange="saveCfg()">
+        <option value="30">30 min</option>
+        <option value="40">40 min</option>
+        <option value="50">50 min</option>
+        <option value="60" selected>1 hora</option>
+        <option value="80">1h20min</option>
+        <option value="90">1h30min</option>
+        <option value="120">2 horas</option>
+      </select></div></div>
+      <div class="set-row"><div><div class="set-lbl">Intervalo entre clientes</div><div class="set-sub">Descanso entre atendimentos</div></div><div class="set-ctrl"><select id="cfgBuf" onchange="saveCfg()">
+        <option value="0" selected>Sem intervalo</option>
+        <option value="5">5 min</option>
+        <option value="10">10 min</option>
+        <option value="15">15 min</option>
+        <option value="20">20 min</option>
+        <option value="30">30 min</option>
+      </select></div></div>
+      <div class="set-row"><div><div class="set-lbl">Máx. de clientes por dia</div><div class="set-sub">Ao atingir, o dia aparece como "Lotado"</div></div><div class="set-ctrl"><input type="number" id="cfgMax" value="10" min="1" max="30" onchange="saveCfg()" style="width:66px"></div></div>
+      <div class="set-row"><div><div class="set-lbl">Hora de início</div><div class="set-sub">Primeiro horário do dia</div></div><div class="set-ctrl"><select id="cfgStartH" onchange="saveCfg()">
+        <option value="5">05:00</option><option value="6" selected>06:00</option><option value="7">07:00</option><option value="8">08:00</option><option value="9">09:00</option><option value="10">10:00</option><option value="11">11:00</option><option value="12">12:00</option>
+      </select></div></div>
+      <div class="set-row"><div><div class="set-lbl">Hora de término</div><div class="set-sub">Último horário do dia</div></div><div class="set-ctrl"><select id="cfgEndH" onchange="saveCfg()">
+        <option value="14">14:00</option><option value="15">15:00</option><option value="16">16:00</option><option value="17">17:00</option><option value="18">18:00</option><option value="19">19:00</option><option value="20" selected>20:00</option><option value="21">21:00</option><option value="22">22:00</option><option value="23">23:00</option>
+      </select></div></div>
       <div class="set-row" style="flex-direction:column;align-items:flex-start;gap:10px">
-        <div><div class="set-lbl">Horários disponíveis para clientes</div><div class="set-sub">Ative só os que deseja oferecer. Os desativados aparecem como "Ocupado" automaticamente.</div></div>
+        <div><div class="set-lbl">Horários disponíveis para clientes</div><div class="set-sub">Ative só os que deseja oferecer. Os desativados não aparecem para o cliente.</div></div>
         <div class="slot-selector" id="admSlots"></div>
-        <button onclick="saveSlots()" style="padding:9px 18px;background:var(--rose);color:#fff;border:none;border-radius:50px;font-size:13px;cursor:pointer;font-family:Outfit,sans-serif">Salvar horários</button>
+        <button onclick="saveSlots()" style="padding:10px 22px;background:var(--rose);color:#fff;border:none;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif">💾 Salvar horários</button>
       </div>
   </div>
     </div>
@@ -1237,71 +1425,58 @@ const fbDB = firebase.database();
   <div class="adm-sub-handle"></div>
   <div class="adm-sub-inner">
       <button class="adm-back" onclick="closeSub()">‹ Voltar</button>
-      <h3>Cores do Site</h3>
-      <p class="adm-sub-desc">Visualize as mudanças em tempo real. Salve para persistir.</p>
-      <div style="height:34px;border-radius:10px;margin-bottom:14px;border:1.5px solid #ead8e0;transition:background .3s;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--lgray)" id="coresPreviewBar">Prévia das cores</div>
-      <div class="clr-grid">
-        <div class="clr-item"><label>Cor de destaque (Rose)</label><input type="color" id="clrRose" value="#c2185b" oninput="previewColor('--rose',this.value)"></div>
-        <div class="clr-item"><label>Rose escuro</label><input type="color" id="clrRose2" value="#e91e63" oninput="previewColor('--rose2',this.value)"></div>
-        <div class="clr-item"><label>Fundo do site</label><input type="color" id="clrBg" value="#fff9fb" oninput="previewColor('--bg',this.value)"></div>
-        <div class="clr-item"><label>Fundo nude</label><input type="color" id="clrNude" value="#f5ede6" oninput="previewColor('--nude',this.value)"></div>
-        <div class="clr-item"><label>Texto principal</label><input type="color" id="clrInk" value="#0d0007" oninput="previewColor('--ink',this.value)"></div>
-        <div class="clr-item"><label>Texto secundário</label><input type="color" id="clrGray" value="#6b5b62" oninput="previewColor('--gray',this.value)"></div>
-        <div class="clr-item"><label>Texto claro</label><input type="color" id="clrLgray" value="#b0a0a8" oninput="previewColor('--lgray',this.value)"></div>
-        <div class="clr-item"><label>Rose pastel (fundo chips)</label><input type="color" id="clrRosep" value="#fce4ec" oninput="previewColor('--rosep',this.value)"></div>
-        <div class="clr-item"><label>Rose médio</label><input type="color" id="clrRosem" value="#f48fb1" oninput="previewColor('--rosem',this.value)"></div>
+      <h3>🎨 Personalizar cores e gradientes</h3>
+      <p class="adm-sub-desc">Clique no que deseja mudar. As mudanças aparecem em tempo real e podem ser salvas.</p>
+
+      <div class="edit-targets">
+        <button class="edit-target-btn" onclick="abrirEditorAlvo('btn')">
+          <div class="edit-target-preview" id="tgtPrevBtn" style="background:linear-gradient(135deg,#c2185b,#e91e63)"></div>
+          <span class="edit-target-lbl">🌸 Botões principais</span>
+          <span class="edit-target-sub">Header, CTAs e ações</span>
+        </button>
+        <button class="edit-target-btn" onclick="abrirEditorAlvo('hero')">
+          <div class="edit-target-preview" id="tgtPrevHero" style="background:linear-gradient(170deg,#120008,#2d0018,#7b0a3a)"></div>
+          <span class="edit-target-lbl">🖼️ Tela inicial</span>
+          <span class="edit-target-sub">Fundo do hero</span>
+        </button>
+        <button class="edit-target-btn" onclick="abrirEditorAlvo('cta')">
+          <div class="edit-target-preview" id="tgtPrevCta" style="background:linear-gradient(145deg,#7b0a3a,#c2185b)"></div>
+          <span class="edit-target-lbl">💕 Seção final (CTA)</span>
+          <span class="edit-target-sub">Convite para agendar</span>
+        </button>
+        <button class="edit-target-btn" onclick="abrirEditorAlvo('rose')">
+          <div class="edit-target-preview" id="tgtPrevRose" style="background:#c2185b"></div>
+          <span class="edit-target-lbl">🌹 Cor principal</span>
+          <span class="edit-target-sub">Rosa do site</span>
+        </button>
+        <button class="edit-target-btn" onclick="abrirEditorAlvo('bg')">
+          <div class="edit-target-preview" id="tgtPrevBg" style="background:#fff9fb;border:1px solid #eee"></div>
+          <span class="edit-target-lbl">📄 Fundo do site</span>
+          <span class="edit-target-sub">Cor de fundo das seções</span>
+        </button>
+        <button class="edit-target-btn" onclick="abrirEditorAlvo('ink')">
+          <div class="edit-target-preview" id="tgtPrevInk" style="background:#0d0007"></div>
+          <span class="edit-target-lbl">📝 Cor dos textos</span>
+          <span class="edit-target-sub">Textos principais</span>
+        </button>
       </div>
-      <div class="clr-btns">
-        <button class="clr-save" onclick="saveColors()">💾 Salvar cores</button>
-        <button class="clr-reset" onclick="resetColors()">↺ Restaurar padrão</button>
+
+      <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-print" onclick="resetTudoVisual()">↺ Restaurar tudo</button>
       </div>
+
+      <!-- Editor contextual que aparece quando clica em um alvo -->
+      <div id="editorAlvoArea" style="display:none;margin-top:18px;padding:14px;background:var(--nude);border-radius:14px"></div>
   </div>
     </div>
+    <!-- O sub antigo de gradientes vira só um link/atalho para o unificado -->
     <div class="adm-sub" id="subLayoutGrad">
   <div class="adm-sub-handle"></div>
   <div class="adm-sub-inner">
       <button class="adm-back" onclick="closeSub()">‹ Voltar</button>
-      <h3>Gradientes</h3>
-      <p class="adm-sub-desc">Edite os degradês do Hero, CTA e botões.</p>
-      <div style="margin-bottom:20px">
-        <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--rose);margin-bottom:10px">Hero (fundo da tela inicial)</p>
-        <div id="gradHeroPreview" class="grad-preview"></div>
-        <div class="grad-row"><label>Cor inicial</label><input type="color" id="ghC1" value="#120008" oninput="updateGradPreview('hero')"></div>
-        <div class="grad-row"><label>Cor do meio</label><input type="color" id="ghC2" value="#2d0018" oninput="updateGradPreview('hero')"></div>
-        <div class="grad-row"><label>Cor final</label><input type="color" id="ghC3" value="#7b0a3a" oninput="updateGradPreview('hero')"></div>
-        <div class="grad-row"><label>Direção</label>
-          <select id="ghDir" onchange="updateGradPreview('hero')">
-            <option value="170deg">↗ Diagonal (padrão)</option>
-            <option value="to bottom">↓ Vertical</option>
-            <option value="to right">→ Horizontal</option>
-            <option value="135deg">↘ Diagonal reversa</option>
-            <option value="to top">↑ De baixo pra cima</option>
-          </select>
-        </div>
-        <button class="btn-save" style="margin-top:10px" onclick="saveGradient('hero')">Salvar gradiente hero</button>
-      </div>
-      <div style="margin-bottom:20px">
-        <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--rose);margin-bottom:10px">CTA (seção final)</p>
-        <div id="gradCtaPreview" class="grad-preview"></div>
-        <div class="grad-row"><label>Cor inicial</label><input type="color" id="gcC1" value="#7b0a3a" oninput="updateGradPreview('cta')"></div>
-        <div class="grad-row"><label>Cor final</label><input type="color" id="gcC2" value="#c2185b" oninput="updateGradPreview('cta')"></div>
-        <div class="grad-row"><label>Direção</label>
-          <select id="gcDir" onchange="updateGradPreview('cta')">
-            <option value="145deg">↗ Diagonal (padrão)</option>
-            <option value="to bottom">↓ Vertical</option>
-            <option value="to right">→ Horizontal</option>
-            <option value="135deg">↘ Diagonal reversa</option>
-          </select>
-        </div>
-        <button class="btn-save" style="margin-top:10px" onclick="saveGradient('cta')">Salvar gradiente CTA</button>
-      </div>
-      <div>
-        <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--rose);margin-bottom:10px">Botões (destaque/header)</p>
-        <div id="gradBtnPreview" class="grad-preview" style="height:40px;border-radius:50px"></div>
-        <div class="grad-row"><label>Cor inicial</label><input type="color" id="gbC1" value="#c2185b" oninput="updateGradPreview('btn')"></div>
-        <div class="grad-row"><label>Cor final</label><input type="color" id="gbC2" value="#e91e63" oninput="updateGradPreview('btn')"></div>
-        <button class="btn-save" style="margin-top:10px" onclick="saveGradient('btn')">Salvar gradiente botões</button>
-      </div>
+      <h3>🌈 Gradientes</h3>
+      <p class="adm-sub-desc">Os gradientes foram unificados com as cores. Use o editor visual.</p>
+      <button class="btn-save" onclick="closeSub();setTimeout(function(){showSub('subLayoutCores')},220)">Abrir editor visual</button>
   </div>
     </div>
   </div>
@@ -1315,6 +1490,41 @@ const fbDB = firebase.database();
 <div id="printArea" style="display:none"></div>
 
 <script>
+/* ── NORMALIZAÇÃO DE TELEFONE ──
+   Junta 5581993984490, 81993984490, 8193984490 e 993984490 no mesmo ID.
+   Regra: pegar só dígitos, remover DDI 55 inicial se tiver 12-13 dígitos,
+   garantir DDD de 2 dígitos, garantir 9 inicial em celular (regra anatel pós-2012).
+   Sempre retorna formato canônico: 55 + DDD(2) + 9 + 8 dígitos = 13 dígitos. */
+function normalizePhone(raw){
+  if(!raw) return '';
+  var d = String(raw).replace(/\D/g,'');
+  if(!d) return '';
+  // Remover DDI 55 se presente
+  if(d.length === 13 && d.indexOf('55') === 0) d = d.substring(2);   // 5581993984490 → 81993984490
+  if(d.length === 12 && d.indexOf('55') === 0) d = d.substring(2);   // 558193984490 → 8193984490
+  // Agora deve ter 8, 9, 10 ou 11 dígitos
+  // 8 dígitos: número antigo sem 9 e sem DDD — não temos como saber DDD, devolve assim mesmo
+  if(d.length === 8) return d; // não temos DDD → não normaliza
+  // 9 dígitos: começa com 9 (celular sem DDD) → tem que ter DDD para normalizar; devolve
+  if(d.length === 9) return d;
+  // 10 dígitos: DDD(2) + 8 dígitos (formato antigo sem o 9) → adiciona 9
+  if(d.length === 10){
+    var ddd = d.substring(0,2), rest = d.substring(2);
+    if(rest.length === 8 && rest[0] !== '9') rest = '9' + rest;
+    d = ddd + rest;
+  }
+  // 11 dígitos: DDD(2) + 9 + 8 dígitos (formato correto BR) → usa como está
+  if(d.length !== 11) return d;
+  return '55' + d; // canônico: 13 dígitos com DDI
+}
+/* Formata para exibição: (81) 99398-4490 */
+function formatPhone(raw){
+  var d = normalizePhone(raw);
+  if(d.length === 13 && d.indexOf('55') === 0) d = d.substring(2);
+  if(d.length === 11) return '('+d.substring(0,2)+') '+d.substring(2,7)+'-'+d.substring(7);
+  return raw || '';
+}
+
 /* ── TOAST ── */
 function toast(msg,dur){
   var t=document.getElementById('toast');
@@ -1336,31 +1546,70 @@ var APS=8;
 var MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 var DAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 
-/* INIT */
-window.addEventListener('DOMContentLoaded',function(){
+/* INIT — só inicializa o app DEPOIS que Firebase carregar os dados.
+   Isso evita que estado vazio do localStorage sobrescreva dados salvos. */
+function reloadAllPics(){
+  var saved=localStorage.getItem('allPics');
+  allPics=[];
+  if(saved){try{allPics=JSON.parse(saved);}catch(e){allPics=[];}}
+  // Só usa fotos default se NUNCA foram limpas (flag controla isso)
+  if(allPics.length===0 && !localStorage.getItem('customClearedDefaults')){
+    var defs=[IMGS.res1,IMGS.res2,IMGS.res3,IMGS.res4,IMGS.res5];
+    allPics=defs.filter(Boolean);
+  }
+}
+function bootApp(){
   var h=document.getElementById('heroImg');
   var savedHero=localStorage.getItem('heroPhoto');
   h.style.backgroundImage='url('+(savedHero||IMGS.rosto)+')';
   var sp=document.getElementById('sobreImg');
   sp.src=localStorage.getItem('profilePhoto')||IMGS.eduarda;
-  var saved=localStorage.getItem('allPics');
-  if(saved){try{allPics=JSON.parse(saved);}catch(e){allPics=[];}}
-  if(allPics.length===0){
-    var defs=[IMGS.res1,IMGS.res2,IMGS.res3,IMGS.res4,IMGS.res5];
-    allPics=defs.filter(Boolean);
-  }
+  reloadAllPics();
   renderGal();
-  // updateBadge, loadCfg, buildSlots rodam só após login (painel no DOM)
+  loadColors();          // aplicar cores salvas no boot
+  loadGradients();       // aplicar gradientes salvos no boot
+  loadAllLayoutTextos(); // aplicar textos personalizados
   loadTextos();
   loadContato();
   loadAviso();
   renderExtras();
   renderCal();
+}
+window.addEventListener('DOMContentLoaded',function(){
+  if(window.FB_READY) bootApp();
+  else document.addEventListener('fb-ready', bootApp, {once:true});
+  // Fallback: se Firebase demorar mais que 3.5s, boota com cache local
+  setTimeout(function(){ if(!window._appBooted){ window._appBooted=true; bootApp(); } }, 3500);
 });
+// marcar boot para evitar duplicação
+(function(){
+  var orig = bootApp;
+  bootApp = function(){ if(window._appBooted) return; window._appBooted = true; orig(); };
+})();
 
 /* HEADER SCROLL */
 window.addEventListener('scroll',function(){
   document.getElementById('hdr').classList.toggle('up',window.scrollY>60);
+});
+
+/* ESC fecha sub aberto, ou fecha admin se nenhum sub aberto */
+window.addEventListener('keydown', function(e){
+  if(e.key !== 'Escape') return;
+  // 1. Se modal de confirmação está aberto → fecha modal
+  var cm = document.getElementById('confirmModal');
+  if(cm && cm.classList.contains('on')){ fecharConfirmacao(); return; }
+  // 2. Se modal de concluir está aberto → fecha
+  var dm = document.getElementById('doneModal');
+  if(dm && dm.classList.contains('on')){ cancelarConcluir(); return; }
+  // 3. Se algum sub está aberto → fecha sub
+  var algumSub = (typeof SUBS !== 'undefined') && SUBS.some(function(id){
+    var el=document.getElementById(id);
+    return el && el.classList.contains('on');
+  });
+  if(algumSub){ closeSub(); return; }
+  // 4. Se admin está aberto → fecha admin
+  var admOv = document.getElementById('admOverlay');
+  if(admOv && admOv.classList.contains('on')){ closeAdm(); return; }
 });
 
 /* SCROLL REVEAL bidirectional */
@@ -1385,10 +1634,15 @@ function waSvc(e,name){
 }
 
 /* GALLERY */
+function isAdmLogged(){
+  var panel = document.querySelector('.adm-panel');
+  return panel && panel.classList.contains('logged');
+}
 function setGCell(i,src){
   var c=document.getElementById('gc'+i);
   if(!c)return;
-  c.innerHTML='<img src="'+src+'" alt="Trabalho '+(i+1)+'"><div class="gal-tap">👁</div>';
+  var delBtn = isAdmLogged() ? '<button class="gal-del" onclick="event.stopPropagation();deletarFotoGaleria('+i+')" title="Remover foto">🗑️</button>' : '';
+  c.innerHTML='<img src="'+src+'" alt="Trabalho '+(i+1)+'"><div class="gal-tap">👁</div>'+delBtn;
 }
 function renderGal(){
   var phs=['🌸','✦','🦋','🌿','💕','✨','🪢','💫'];
@@ -1424,8 +1678,11 @@ function renderArc(){
   var st=document.getElementById('arcStrip');
   var s=arcPage*APS;
   var items=arc.slice(s,s+APS);
+  var admLogged = isAdmLogged();
   st.innerHTML=items.map(function(src,i){
-    return '<div class="arc-thumb" onclick="openLb('+(8+s+i)+')" ><img src="'+src+'" alt=""></div>';
+    var realIdx = 8+s+i;
+    var del = admLogged ? '<button class="gal-del" onclick="event.stopPropagation();deletarFotoGaleria('+realIdx+')" title="Remover">🗑️</button>' : '';
+    return '<div class="arc-thumb" onclick="openLb('+realIdx+')"><img src="'+src+'" alt="">'+del+'</div>';
   }).join('');
 }
 function arcNav(p){arcPage=p;renderArc();}
@@ -1443,10 +1700,12 @@ document.getElementById('lb').addEventListener('click',function(e){if(e.target==
 function getCfg(){
   return{
     dur:parseInt(localStorage.getItem('cfgDur')||'60'),
-    buf:parseInt(localStorage.getItem('cfgBuf')||'15'),
-    max:parseInt(localStorage.getItem('cfgMax')||'6'),
+    buf:parseInt(localStorage.getItem('cfgBuf')||'0'),  // padrão: sem intervalo
+    max:parseInt(localStorage.getItem('cfgMax')||'10'), // padrão: 10
     slots:JSON.parse(localStorage.getItem('cfgSlots')||'null'),
-    blocked:JSON.parse(localStorage.getItem('blockedDays')||'[]')
+    blocked:JSON.parse(localStorage.getItem('blockedDays')||'[]'),
+    startH:parseInt(localStorage.getItem('cfgStartH')||'6'),   // 6h
+    endH:parseInt(localStorage.getItem('cfgEndH')||'20')       // 20h
   };
 }
 function loadCfg(){
@@ -1454,28 +1713,37 @@ function loadCfg(){
   var sd=document.getElementById('cfgDur');if(sd)sd.value=c.dur;
   var sb=document.getElementById('cfgBuf');if(sb)sb.value=c.buf;
   var sm=document.getElementById('cfgMax');if(sm)sm.value=c.max;
+  var sh=document.getElementById('cfgStartH');if(sh)sh.value=c.startH;
+  var eh=document.getElementById('cfgEndH');if(eh)eh.value=c.endH;
 }
 function saveCfg(){
-  localStorage.setItem('cfgDur',document.getElementById('cfgDur').value);
-  localStorage.setItem('cfgBuf',document.getElementById('cfgBuf').value);
-  localStorage.setItem('cfgMax',document.getElementById('cfgMax').value);
+  var dur=document.getElementById('cfgDur');
+  var buf=document.getElementById('cfgBuf');
+  var max=document.getElementById('cfgMax');
+  var sh=document.getElementById('cfgStartH');
+  var eh=document.getElementById('cfgEndH');
+  if(dur)localStorage.setItem('cfgDur',dur.value);
+  if(buf)localStorage.setItem('cfgBuf',buf.value);
+  if(max)localStorage.setItem('cfgMax',max.value);
+  if(sh)localStorage.setItem('cfgStartH',sh.value);
+  if(eh)localStorage.setItem('cfgEndH',eh.value);
   buildSlots();renderCal();toast('Configurações salvas ✓');
 }
 function genSlots(){
-  var c=getCfg(),en=c.slots,all=[],h=9,m=0;
-  while(h<18){
+  var c=getCfg(),en=c.slots,all=[],h=c.startH,m=0;
+  while(h<c.endH){
     var t=pad(h)+':'+pad(m);
     all.push(t);
     var nx=h*60+m+c.dur+c.buf;
-    if(Math.floor(nx/60)>=18)break;
+    if(Math.floor(nx/60)>=c.endH)break;
     h=Math.floor(nx/60);m=nx%60;
   }
   return en?all.filter(function(t){return en.indexOf(t)>=0;}):all;
 }
 function pad(n){return n<10?'0'+n:''+n;}
 function buildSlots(){
-  var c=getCfg(),all=[],h=9,m=0;
-  while(h<18){all.push(pad(h)+':'+pad(m));var nx=h*60+m+c.dur+c.buf;if(Math.floor(nx/60)>=18)break;h=Math.floor(nx/60);m=nx%60;}
+  var c=getCfg(),all=[],h=c.startH,m=0;
+  while(h<c.endH){all.push(pad(h)+':'+pad(m));var nx=h*60+m+c.dur+c.buf;if(Math.floor(nx/60)>=c.endH)break;h=Math.floor(nx/60);m=nx%60;}
   var en=c.slots||all;
   var w=document.getElementById('admSlots');if(!w)return;
   w.innerHTML=all.map(function(t){
@@ -1555,12 +1823,27 @@ function submitBk(){
   var svc=document.getElementById('bkSvc').value;
   if(!name){toast('Preencha seu nome!');return;}
   if(!phone){toast('⚠️ WhatsApp é obrigatório para confirmar o agendamento!');document.getElementById('bkPhone').focus();return;}
+  var phNorm = normalizePhone(phone);
+  if(!phNorm || phNorm.length < 10){toast('⚠️ Número de WhatsApp inválido. Digite com DDD.');document.getElementById('bkPhone').focus();return;}
   if(!selDate||!selTime){toast('Selecione data e horário!');return;}
   var key=dkey(selDate);
   var all=JSON.parse(localStorage.getItem('bookings')||'{}');
   if(!all[key])all[key]=[];
-  var bk={id:Date.now(),name:name,phone:phone,date:key,time:selTime,service:svc,status:'pending',at:new Date().toISOString()};
-  all[key].push(bk);localStorage.setItem('bookings',JSON.stringify(all));
+  var bk={
+    id:Date.now(),
+    name:name,
+    phone:phone,           // original que o cliente digitou
+    phoneNorm:phNorm,      // normalizado para buscar/agrupar
+    date:key,
+    time:selTime,
+    service:svc,
+    status:'pending',
+    at:new Date().toISOString()
+  };
+  all[key].push(bk);
+  localStorage.setItem('bookings',JSON.stringify(all));
+  // Forçar save imediato no Firebase (sem aguardar debounce) caso usuário feche o navegador
+  try{ if(window.fbDB && window.FB_READY) fbDB.ref('data/bookings').set(JSON.stringify(all)); }catch(e){}
   updateBadge();
   var d=selDate;
   var msg='Olá Eduarda! 🌸\n\n*Nova solicitação*\n👤 '+name+'\n📅 '+DAYS[d.getDay()]+', '+d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear()+'\n🕐 '+selTime+'\n✦ '+svc+'\n📱 '+phone;
@@ -1583,10 +1866,11 @@ function openAdm(){
   if(edit){edit.style.display='none';edit.classList.remove('on');}
   var panel=document.querySelector('.adm-panel');if(panel)panel.classList.remove('logged');
   // Resetar scroll do painel
-  var panel=document.querySelector('.adm-panel');
   if(panel)panel.scrollTop=0;
   document.getElementById('admOverlay').classList.add('on');
+  // CRÍTICO: travar scroll de fundo (body E html) para não atrapalhar
   document.body.style.overflow='hidden';
+  document.documentElement.style.overflow='hidden';
   checkAutoReset();
   var pw=document.getElementById('admPw');if(pw)pw.value='';
   var err=document.getElementById('admErr');if(err)err.style.display='none';
@@ -1600,7 +1884,13 @@ function openAdm(){
   },100);
 }
 function closeOuter(e){if(e.target===document.getElementById('admOverlay'))closeAdm();}
-function closeAdm(){document.getElementById('admOverlay').classList.remove('on');hideAllSubs();}
+function closeAdm(){
+  document.getElementById('admOverlay').classList.remove('on');
+  hideAllSubs();
+  // CRÍTICO: restaurar scroll do body — sem isso a página fica travada
+  document.body.style.overflow='';
+  document.documentElement.style.overflow='';
+}
 function doLogin(){
   var pw=document.getElementById('admPw').value;
   if(pw===PW){
@@ -1694,10 +1984,11 @@ function stBadge(st){
 
 /* ─── AGENDAMENTOS COMPLETOS ─── */
 function waLink(phone,name){
-  var ph=(phone||'').replace(/\D/g,'');
-  if(!ph)return '';
-  if(ph.length<=11)ph='55'+ph;
-  var msg='Olá '+name+'! 🌸 Aqui é a Eduarda Sobrancelhas. Tudo bem?';
+  var ph = normalizePhone(phone);
+  if(!ph) return '';
+  // Garantir DDI 55 no início (normalizePhone retorna 13 dígitos com 55)
+  if(ph.length === 11) ph = '55' + ph; // fallback se não normalizou
+  var msg='Olá '+(name||'')+'! 🌸 Aqui é a Eduarda Sobrancelhas. Tudo bem?';
   return 'https://wa.me/'+ph+'?text='+encodeURIComponent(msg);
 }
 var WASVG='<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
@@ -1756,17 +2047,163 @@ function saveEditBk(id,key,filter){
   localStorage.setItem('bookings',JSON.stringify(all));
   renderBkFull(filter);renderCal();toast('Agendamento atualizado ✓');
 }
+/* ═══ MODAL DE CONFIRMAÇÃO GENÉRICO ═══
+   Uso: abrirConfirmacao({titulo, descricao, palavra, botaoTxt, onConfirm})
+   - palavra: se passar uma string (ex: 'CONFIRMAR'), o usuário precisa digitar para liberar.
+   - Se palavra for null, é só um clique de confirmação. */
+function abrirConfirmacao(opts){
+  var modal=document.getElementById('confirmModal');
+  if(!modal){
+    modal=document.createElement('div');
+    modal.id='confirmModal';
+    modal.className='confirm-modal-ov';
+    modal.innerHTML='<div class="confirm-modal-box">'+
+      '<h3 id="cmTitulo"></h3>'+
+      '<p id="cmDesc"></p>'+
+      '<input type="text" id="cmInput" autocomplete="off">'+
+      '<div class="cm-actions">'+
+        '<button class="cm-cancel" onclick="fecharConfirmacao()">Cancelar</button>'+
+        '<button class="cm-confirm" id="cmBtn">Confirmar</button>'+
+      '</div>'+
+    '</div>';
+    document.body.appendChild(modal);
+  }
+  document.getElementById('cmTitulo').textContent = opts.titulo || 'Confirmar?';
+  document.getElementById('cmDesc').textContent = opts.descricao || '';
+  var inp = document.getElementById('cmInput');
+  var btn = document.getElementById('cmBtn');
+  btn.textContent = opts.botaoTxt || 'Confirmar';
+  if(opts.palavra){
+    inp.style.display='block';
+    inp.placeholder='Digite '+opts.palavra+' para prosseguir';
+    inp.value='';
+    btn.onclick = function(){
+      if(inp.value.trim().toUpperCase() !== opts.palavra.toUpperCase()){
+        inp.style.borderColor='#c62828';
+        toast('Digite '+opts.palavra+' para confirmar');
+        setTimeout(function(){inp.style.borderColor='#ef9a9a';},1200);
+        return;
+      }
+      fecharConfirmacao();
+      if(opts.onConfirm) opts.onConfirm();
+    };
+    setTimeout(function(){inp.focus();},80);
+  } else {
+    inp.style.display='none';
+    btn.onclick = function(){
+      fecharConfirmacao();
+      if(opts.onConfirm) opts.onConfirm();
+    };
+  }
+  modal.classList.add('on');
+}
+function fecharConfirmacao(){
+  var modal=document.getElementById('confirmModal');
+  if(modal) modal.classList.remove('on');
+}
+
 function cancelBk(id,key){
   var all=JSON.parse(localStorage.getItem('bookings')||'{}');
   var b=all[key]?all[key].find(function(x){return x.id===id;}):null;
-  if(b){b.status='cancelled';localStorage.setItem('bookings',JSON.stringify(all));}
-  renderCal();toast('Cancelado');
+  if(!b){toast('Agendamento não encontrado');return;}
+  abrirConfirmacao({
+    titulo:'🚫 Cancelar agendamento?',
+    descricao:b.name+' · '+b.date+' '+b.time+'. Esta ação pode ser revertida editando manualmente.',
+    palavra:null,
+    botaoTxt:'Sim, cancelar',
+    onConfirm:function(){
+      var allNow=JSON.parse(localStorage.getItem('bookings')||'{}');
+      var bk=allNow[key]?allNow[key].find(function(x){return x.id===id;}):null;
+      if(bk){bk.status='cancelled';localStorage.setItem('bookings',JSON.stringify(allNow));}
+      renderCal();
+      if(typeof renderBkFull==='function')renderBkFull('all');
+      if(typeof renderDash==='function')renderDash();
+      toast('Cancelado');
+    }
+  });
 }
+/* markDone agora abre o modal de conclusão com valor — caixa só ganha vida aqui */
 function markDone(id,key){
   var all=JSON.parse(localStorage.getItem('bookings')||'{}');
   var b=all[key]?all[key].find(function(x){return x.id===id;}):null;
-  if(b){b.status='done';localStorage.setItem('bookings',JSON.stringify(all));}
-  toast('Marcado como concluído ✔');
+  if(!b){toast('Agendamento não encontrado');return;}
+  // Verificar se já foi concluído
+  if(b.status==='done'){
+    abrirConfirmacao({
+      titulo:'Já concluído',
+      descricao:'Este atendimento já foi marcado como concluído. Deseja registrar outro pagamento?',
+      palavra:null,
+      botaoTxt:'Sim, registrar mais',
+      onConfirm:function(){ abrirModalConcluir(b); }
+    });
+    return;
+  }
+  abrirModalConcluir(b);
+}
+
+/* ── MODAL DE CONCLUSÃO ── */
+function abrirModalConcluir(b){
+  var modal=document.getElementById('doneModal');
+  if(!modal){
+    modal=document.createElement('div');
+    modal.id='doneModal';
+    modal.className='done-modal-ov';
+    modal.innerHTML='<div class="done-modal-box">'+
+      '<h3 style="font-family:\'Bodoni Moda\',serif;margin-bottom:6px">✔ Concluir atendimento</h3>'+
+      '<p id="doneModalInfo" style="font-size:13px;color:var(--gray);margin-bottom:14px"></p>'+
+      '<div class="txt-f"><label>Valor recebido (R$)</label><input type="number" id="doneModalVal" step="0.01" min="0" placeholder="0,00"></div>'+
+      '<div class="txt-f"><label>Forma de pagamento</label><select id="doneModalPay" style="width:100%;padding:11px 13px;border:1.5px solid #ead8e0;border-radius:10px;font-size:14px;font-family:Outfit,sans-serif;background:#fff"><option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option><option value="Cartão">Cartão</option><option value="Cortesia">Cortesia (R$0)</option></select></div>'+
+      '<div style="display:flex;gap:8px;margin-top:10px">'+
+        '<button onclick="cancelarConcluir()" style="flex:1;padding:11px;background:#fff;color:var(--gray);border:1.5px solid #e0d0d8;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif">Cancelar</button>'+
+        '<button onclick="confirmarConcluir()" style="flex:2;padding:11px;background:#2e7d32;color:#fff;border:none;border-radius:50px;font-size:13px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">✔ Concluir e lançar no caixa</button>'+
+      '</div>'+
+    '</div>';
+    document.body.appendChild(modal);
+  }
+  document.getElementById('doneModalInfo').textContent=b.name+' · '+b.date+' '+b.time+' · '+(b.service||'—');
+  document.getElementById('doneModalVal').value='';
+  modal._bk = b;
+  modal.classList.add('on');
+  setTimeout(function(){document.getElementById('doneModalVal').focus();},80);
+}
+function cancelarConcluir(){
+  var modal=document.getElementById('doneModal');
+  if(modal){modal.classList.remove('on');modal._bk=null;}
+}
+function confirmarConcluir(){
+  var modal=document.getElementById('doneModal');
+  if(!modal||!modal._bk)return;
+  var b=modal._bk;
+  var valEl=document.getElementById('doneModalVal');
+  var payEl=document.getElementById('doneModalPay');
+  var val=parseFloat(valEl.value||'0')||0;
+  var payMethod=payEl.value;
+  if(payMethod==='Cortesia') val=0;
+  // Atualizar booking → done
+  var all=JSON.parse(localStorage.getItem('bookings')||'{}');
+  var bk=all[b.date]?all[b.date].find(function(x){return x.id===b.id;}):null;
+  if(bk){
+    bk.status='done';
+    bk.doneAt=new Date().toISOString();
+    bk.valorPago=val;
+    bk.payMethod=payMethod;
+    localStorage.setItem('bookings',JSON.stringify(all));
+  }
+  // Registrar no caixa
+  if(val > 0 || payMethod==='Cortesia'){
+    var cxAll=JSON.parse(localStorage.getItem('caixa')||'[]');
+    var ph = normalizePhone(b.phone);
+    cxAll.push({
+      bkId:b.id,key:b.date,valor:val,name:b.name,phRaw:ph,
+      service:b.service||'',date:b.date,ts:Date.now(),pay:payMethod
+    });
+    localStorage.setItem('caixa',JSON.stringify(cxAll));
+  }
+  cancelarConcluir();
+  toast('✔ '+b.name+' concluído'+(val>0?' · R$'+val.toFixed(2).replace('.',',')+' no caixa':''));
+  if(typeof renderBkFull==='function')renderBkFull('all');
+  if(typeof renderCaixa==='function')renderCaixa(_cxPeriod||'today');
+  if(typeof renderDash==='function')renderDash();
 }
 
 /* ─── CLIENTES AVANÇADO ─── */
@@ -1774,19 +2211,23 @@ function buildClientMap(){
   var all=JSON.parse(localStorage.getItem('bookings')||'{}');
   var clients={};
   var today=new Date();today.setHours(0,0,0,0);
+  var cxAll=JSON.parse(localStorage.getItem('caixa')||'[]');
   Object.keys(all).forEach(function(k){
     all[k].forEach(function(b){
       if(!b.phone)return;
-      var ph=b.phone.replace(/\D/g,'');
+      var ph = normalizePhone(b.phone);  // chave canônica unificada
+      if(!ph) return;
       if(!clients[ph]){
         clients[ph]={
-          name:b.name,phone:b.phone,phRaw:ph,
+          name:b.name,phone:b.phone,phRaw:ph,phDisplay:formatPhone(b.phone),
           total:0,confirmed:0,cancelled:0,done:0,
           firstDate:'',lastDate:'',services:{},
           totalGasto:0,daysSinceLast:0
         };
       }
       var c=clients[ph];
+      // Atualizar nome se vazio ou se for mais recente (último agendamento ganha)
+      if(b.name && (!c.lastDate || b.date >= c.lastDate)) c.name = b.name;
       c.total++;
       if(b.status==='confirmed'||b.status==='done')c.confirmed++;
       if(b.status==='cancelled')c.cancelled++;
@@ -1794,9 +2235,10 @@ function buildClientMap(){
       if(!c.firstDate||b.date<c.firstDate)c.firstDate=b.date;
       if(!c.lastDate||b.date>c.lastDate)c.lastDate=b.date;
       if(b.service)c.services[b.service]=(c.services[b.service]||0)+1;
-      // Acumular gasto (se tiver valor pago no caixa)
-      var cxAll=JSON.parse(localStorage.getItem('caixa')||'[]');
-      cxAll.filter(function(x){return x.bkId===b.id&&x.phRaw===ph;}).forEach(function(x){c.totalGasto+=x.valor;});
+      // Acumular gasto: usar a mesma chave normalizada
+      cxAll.filter(function(x){
+        return x.bkId===b.id || normalizePhone(x.phRaw||'')===ph;
+      }).forEach(function(x){c.totalGasto+=(x.valor||0);});
     });
   });
   // Calcular dias desde último agendamento
@@ -2011,6 +2453,9 @@ function showSub(id){
   // Mostrar overlay
   var ov=document.getElementById('subOverlay');
   if(ov)ov.classList.add('on');
+  // Travar scroll do painel admin para evitar dupla rolagem
+  var panel=document.querySelector('.adm-panel');
+  if(panel)panel.style.overflow='hidden';
   // Pequeno delay para o CSS transition funcionar
   setTimeout(function(){el.classList.add('on');},10);
   // Carregar dados do sub
@@ -2021,7 +2466,7 @@ function showSub(id){
   if(id==='subContato')loadContatoFields();
   if(id==='subListSvc')renderExtraSvcList();
   if(id==='subLayoutTextos')buildLayoutTextosForm();
-  if(id==='subLayoutCores'){loadColors();updateCoresPreview();}
+  if(id==='subLayoutCores'){loadColors();atualizarTodasPreviews();}
   if(id==='subLayoutGrad'){updateGradPreview('hero');updateGradPreview('cta');updateGradPreview('btn');}
   // Scroll para o topo do sub
   setTimeout(function(){el.scrollTop=0;},50);
@@ -2034,6 +2479,9 @@ function closeSub(){
   });
   var ov=document.getElementById('subOverlay');
   if(ov)ov.classList.remove('on');
+  // Restaurar scroll do painel admin
+  var panel=document.querySelector('.adm-panel');
+  if(panel)panel.style.overflow='';
 }
 function closeSubFromOverlay(){closeSub();}
 function hideSub(id){closeSub();}
@@ -2041,6 +2489,8 @@ function hideAllSubs(){
   SUBS.forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('on');});
   var ov=document.getElementById('subOverlay');
   if(ov)ov.classList.remove('on');
+  var panel=document.querySelector('.adm-panel');
+  if(panel)panel.style.overflow='';
 }
 
 function switchTab(id,btn){
@@ -2353,6 +2803,49 @@ function rejBk(id,key){
   if(b){b.status='rejected';localStorage.setItem('bookings',JSON.stringify(all));}
   updateBadge();renderPending();toast('Recusado');
 }
+/* ── LIMPAR AGENDAMENTOS ── */
+function limparTodosAgendamentos(){
+  abrirConfirmacao({
+    titulo:'⚠️ Limpar TODOS os agendamentos?',
+    descricao:'Esta ação remove TODOS os agendamentos (pendentes, confirmados, concluídos e cancelados) e também o caixa relacionado. NÃO pode ser desfeita.',
+    palavra:'LIMPAR',
+    botaoTxt:'Sim, limpar tudo',
+    onConfirm:function(){
+      localStorage.setItem('bookings',JSON.stringify({}));
+      localStorage.setItem('caixa',JSON.stringify([]));
+      renderCal();
+      if(typeof renderBkFull==='function')renderBkFull('all');
+      if(typeof renderDash==='function')renderDash();
+      if(typeof renderCaixa==='function')renderCaixa(_cxPeriod||'today');
+      if(typeof updateBadge==='function')updateBadge();
+      toast('🗑️ Todos os agendamentos removidos');
+    }
+  });
+}
+function limparAgendamentosCancelados(){
+  abrirConfirmacao({
+    titulo:'🗑️ Limpar cancelados e recusados?',
+    descricao:'Remove apenas os agendamentos com status "cancelado" ou "recusado". Pendentes e confirmados são mantidos.',
+    palavra:null,
+    botaoTxt:'Sim, limpar',
+    onConfirm:function(){
+      var all=JSON.parse(localStorage.getItem('bookings')||'{}');
+      var removed=0;
+      Object.keys(all).forEach(function(k){
+        var antes=all[k].length;
+        all[k]=all[k].filter(function(b){return b.status!=='cancelled' && b.status!=='rejected';});
+        removed += (antes-all[k].length);
+        if(all[k].length===0) delete all[k];
+      });
+      localStorage.setItem('bookings',JSON.stringify(all));
+      renderCal();
+      if(typeof renderBkFull==='function')renderBkFull('all');
+      if(typeof renderDash==='function')renderDash();
+      toast('🗑️ '+removed+' agendamento(s) removido(s)');
+    }
+  });
+}
+
 function delBk(id,key){
   var all=JSON.parse(localStorage.getItem('bookings')||'{}');
   if(all[key])all[key]=all[key].filter(function(x){return x.id!==id;});
@@ -2522,8 +3015,52 @@ function upGal(e){
     };r.readAsDataURL(f);
   });
   toast(files.length+' foto(s) adicionada(s)! 📸');
+  e.target.value=''; // permitir reupload da mesma foto
 }
-function clearGal(){allPics=[];localStorage.removeItem('allPics');renderGal();toast('Galeria limpa');}
+/* ── LIMPAR GALERIA COMPLETA com confirmação ── */
+function clearGal(){
+  abrirConfirmacao({
+    titulo:'🗑️ Limpar toda a galeria?',
+    descricao:'Todas as fotos serão removidas, incluindo as fotos padrão. Esta ação não pode ser desfeita.',
+    palavra:'LIMPAR',
+    botaoTxt:'Sim, limpar tudo',
+    onConfirm:function(){
+      allPics=[];
+      localStorage.setItem('allPics',JSON.stringify([]));
+      // Flag para o boot não recarregar as fotos default
+      localStorage.setItem('customClearedDefaults','1');
+      renderGal();
+      toast('🗑️ Galeria limpa');
+    }
+  });
+}
+/* ── APAGAR UMA FOTO da galeria pelo índice ── */
+function deletarFotoGaleria(idx){
+  if(typeof idx !== 'number' || idx < 0 || idx >= allPics.length) return;
+  abrirConfirmacao({
+    titulo:'🗑️ Remover esta foto?',
+    descricao:'A foto será removida da galeria.',
+    palavra:null, // confirmação simples (sem digitar)
+    botaoTxt:'Sim, remover',
+    onConfirm:function(){
+      allPics.splice(idx,1);
+      localStorage.setItem('allPics',JSON.stringify(allPics));
+      // Se a galeria ficar vazia depois de remover, também marca defaults limpos
+      if(allPics.length===0) localStorage.setItem('customClearedDefaults','1');
+      renderGal();
+      toast('Foto removida');
+    }
+  });
+}
+/* ── RESTAURAR fotos padrão (caso queira voltar) ── */
+function restaurarFotosPadrao(){
+  var defs=[IMGS.res1,IMGS.res2,IMGS.res3,IMGS.res4,IMGS.res5].filter(Boolean);
+  allPics = defs.concat(allPics);
+  localStorage.removeItem('customClearedDefaults');
+  localStorage.setItem('allPics',JSON.stringify(allPics));
+  renderGal();
+  toast('🌸 Fotos padrão restauradas');
+}
 
 /* ═══════════════════════════════════════════
    PERSONALIZAR LAYOUT — JAVASCRIPT
@@ -2591,17 +3128,27 @@ function toggleEditMode(){
   document.body.classList.toggle('edit-mode-on',editModeOn);
   var fab=document.getElementById('editFab');
   var txt=document.getElementById('editFabTxt');
+  // Garantir que o scroll do site NÃO fique travado em modo edição
+  document.body.style.overflow='';
+  document.documentElement.style.overflow='';
   if(editModeOn){
-    fab.classList.add('active');
-    txt.textContent='Sair do modo edição';
+    if(fab){
+      fab.classList.add('active');
+      fab.classList.add('visible'); // FAB SEMPRE visível durante edição
+    }
+    if(txt)txt.textContent='✕ Sair do modo edição';
     document.querySelectorAll('[data-editable]').forEach(function(el){
       el.contentEditable='true';
       el.addEventListener('blur',saveInlineEdit,{once:false});
     });
     toast('✏️ Modo edição ativado — clique nos textos para editar');
   }else{
-    fab.classList.remove('active');
-    txt.textContent='Modo Edição';
+    if(fab){
+      fab.classList.remove('active');
+      // Esconder o FAB ao sair (admin pode abrir de novo pelo painel)
+      fab.classList.remove('visible');
+    }
+    if(txt)txt.textContent='Modo Edição';
     document.querySelectorAll('[data-editable]').forEach(function(el){
       el.contentEditable='false';
       el.removeEventListener('blur',saveInlineEdit);
@@ -2618,6 +3165,9 @@ function saveInlineEdit(){
 
 function activateEditModeFromAdm(){
   closeAdm();
+  // Garantir que body NÃO fique travado depois que admin fechar
+  document.body.style.overflow='';
+  document.documentElement.style.overflow='';
   setTimeout(function(){
     if(!editModeOn)toggleEditMode();
     var fab=document.getElementById('editFab');
@@ -2752,6 +3302,156 @@ function saveGradient(g){
   localStorage.setItem('grad_'+g,JSON.stringify(d));
   applyGradient(g,d);
   toast('🌈 Gradiente salvo ✓');
+}
+
+/* ═══════════════════════════════════════════
+   EDITOR VISUAL UNIFICADO — Cores e Gradientes
+═══════════════════════════════════════════ */
+function atualizarTodasPreviews(){
+  var root = getComputedStyle(document.documentElement);
+  function gv(v){return root.getPropertyValue(v).trim();}
+  // Botões: usa gradiente salvo ou padrão
+  var gb = JSON.parse(localStorage.getItem('grad_btn')||'null') || {c1:gv('--rose')||'#c2185b',c2:gv('--rose2')||'#e91e63',dir:'135deg'};
+  var pb=document.getElementById('tgtPrevBtn'); if(pb) pb.style.background='linear-gradient('+gb.dir+','+gb.c1+','+gb.c2+')';
+  // Hero
+  var gh = JSON.parse(localStorage.getItem('grad_hero')||'null') || {c1:'#120008',c2:'#2d0018',c3:'#7b0a3a',dir:'170deg'};
+  var ph=document.getElementById('tgtPrevHero'); if(ph) ph.style.background='linear-gradient('+gh.dir+','+gh.c1+','+gh.c2+','+gh.c3+')';
+  // CTA
+  var gc = JSON.parse(localStorage.getItem('grad_cta')||'null') || {c1:'#7b0a3a',c2:'#c2185b',dir:'145deg'};
+  var pc=document.getElementById('tgtPrevCta'); if(pc) pc.style.background='linear-gradient('+gc.dir+','+gc.c1+','+gc.c2+')';
+  // Cores simples
+  var pr=document.getElementById('tgtPrevRose'); if(pr) pr.style.background=gv('--rose')||'#c2185b';
+  var pbg=document.getElementById('tgtPrevBg'); if(pbg) pbg.style.background=gv('--bg')||'#fff9fb';
+  var pi=document.getElementById('tgtPrevInk'); if(pi) pi.style.background=gv('--ink')||'#0d0007';
+}
+
+function abrirEditorAlvo(alvo){
+  var area = document.getElementById('editorAlvoArea');
+  if(!area) return;
+  var html = '';
+  var titulos={btn:'🌸 Botões principais',hero:'🖼️ Tela inicial (Hero)',cta:'💕 Seção final (CTA)',rose:'🌹 Cor principal (Rosa)',bg:'📄 Fundo do site',ink:'📝 Cor dos textos'};
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><strong style="font-size:13px">'+titulos[alvo]+'</strong><button onclick="fecharEditorAlvo()" style="background:none;border:none;color:var(--gray);font-size:18px;cursor:pointer">✕</button></div>';
+
+  if(alvo==='btn'){
+    var g = JSON.parse(localStorage.getItem('grad_btn')||'null') || {c1:'#c2185b',c2:'#e91e63',dir:'135deg'};
+    html += '<div class="grad-row" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><label style="flex:1;font-size:12px">Cor inicial</label><input type="color" id="edAlvoC1" value="'+g.c1+'" oninput="aplicarAlvo(\'btn\')" style="width:50px;height:38px;border:none;cursor:pointer"></div>';
+    html += '<div class="grad-row" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><label style="flex:1;font-size:12px">Cor final</label><input type="color" id="edAlvoC2" value="'+g.c2+'" oninput="aplicarAlvo(\'btn\')" style="width:50px;height:38px;border:none;cursor:pointer"></div>';
+    html += '<div class="grad-row" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><label style="flex:1;font-size:12px">Direção</label><select id="edAlvoDir" onchange="aplicarAlvo(\'btn\')" style="padding:8px 10px;border:1.5px solid #ead8e0;border-radius:9px;font-size:12px;font-family:Outfit,sans-serif"><option value="135deg"'+(g.dir==='135deg'?' selected':'')+'>↘ Diagonal</option><option value="to right"'+(g.dir==='to right'?' selected':'')+'>→ Horizontal</option><option value="to bottom"'+(g.dir==='to bottom'?' selected':'')+'>↓ Vertical</option><option value="45deg"'+(g.dir==='45deg'?' selected':'')+'>↗ Diagonal reversa</option></select></div>';
+  } else if(alvo==='hero'){
+    var g = JSON.parse(localStorage.getItem('grad_hero')||'null') || {c1:'#120008',c2:'#2d0018',c3:'#7b0a3a',dir:'170deg'};
+    html += '<div class="grad-row" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><label style="flex:1;font-size:12px">Cor inicial (topo)</label><input type="color" id="edAlvoC1" value="'+g.c1+'" oninput="aplicarAlvo(\'hero\')" style="width:50px;height:38px;border:none;cursor:pointer"></div>';
+    html += '<div class="grad-row" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><label style="flex:1;font-size:12px">Cor do meio</label><input type="color" id="edAlvoC2" value="'+g.c2+'" oninput="aplicarAlvo(\'hero\')" style="width:50px;height:38px;border:none;cursor:pointer"></div>';
+    html += '<div class="grad-row" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><label style="flex:1;font-size:12px">Cor final (base)</label><input type="color" id="edAlvoC3" value="'+g.c3+'" oninput="aplicarAlvo(\'hero\')" style="width:50px;height:38px;border:none;cursor:pointer"></div>';
+    html += '<div class="grad-row" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><label style="flex:1;font-size:12px">Direção</label><select id="edAlvoDir" onchange="aplicarAlvo(\'hero\')" style="padding:8px 10px;border:1.5px solid #ead8e0;border-radius:9px;font-size:12px;font-family:Outfit,sans-serif"><option value="170deg"'+(g.dir==='170deg'?' selected':'')+'>↗ Diagonal suave</option><option value="to bottom"'+(g.dir==='to bottom'?' selected':'')+'>↓ Vertical</option><option value="135deg"'+(g.dir==='135deg'?' selected':'')+'>↘ Diagonal</option><option value="to right"'+(g.dir==='to right'?' selected':'')+'>→ Horizontal</option></select></div>';
+  } else if(alvo==='cta'){
+    var g = JSON.parse(localStorage.getItem('grad_cta')||'null') || {c1:'#7b0a3a',c2:'#c2185b',dir:'145deg'};
+    html += '<div class="grad-row" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><label style="flex:1;font-size:12px">Cor inicial</label><input type="color" id="edAlvoC1" value="'+g.c1+'" oninput="aplicarAlvo(\'cta\')" style="width:50px;height:38px;border:none;cursor:pointer"></div>';
+    html += '<div class="grad-row" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><label style="flex:1;font-size:12px">Cor final</label><input type="color" id="edAlvoC2" value="'+g.c2+'" oninput="aplicarAlvo(\'cta\')" style="width:50px;height:38px;border:none;cursor:pointer"></div>';
+    html += '<div class="grad-row" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><label style="flex:1;font-size:12px">Direção</label><select id="edAlvoDir" onchange="aplicarAlvo(\'cta\')" style="padding:8px 10px;border:1.5px solid #ead8e0;border-radius:9px;font-size:12px;font-family:Outfit,sans-serif"><option value="145deg"'+(g.dir==='145deg'?' selected':'')+'>↗ Diagonal</option><option value="to bottom"'+(g.dir==='to bottom'?' selected':'')+'>↓ Vertical</option><option value="135deg"'+(g.dir==='135deg'?' selected':'')+'>↘ Diagonal reversa</option></select></div>';
+  } else {
+    // Cor simples (rose, bg, ink)
+    var mapVar = {rose:'--rose', bg:'--bg', ink:'--ink'};
+    var atual = (localStorage.getItem('clr_'+mapVar[alvo]) || getComputedStyle(document.documentElement).getPropertyValue(mapVar[alvo])).trim() || '#000';
+    html += '<div class="grad-row" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><label style="flex:1;font-size:12px">Escolha a cor</label><input type="color" id="edAlvoCor" value="'+atual+'" oninput="aplicarAlvoCor(\''+alvo+'\',this.value)" style="width:60px;height:42px;border:none;cursor:pointer"></div>';
+    if(alvo==='rose'){
+      // Sugestões prontas de paletas
+      html += '<div style="margin-top:10px"><div style="font-size:11px;color:var(--gray);margin-bottom:6px">Sugestões:</div><div style="display:flex;gap:6px;flex-wrap:wrap">';
+      var sugest=['#c2185b','#e91e63','#ad1457','#880e4f','#d81b60','#ec407a','#6a1b9a','#4a148c','#1b5e20','#2e7d32','#bf360c','#e65100'];
+      sugest.forEach(function(c){
+        html += '<button style="width:32px;height:32px;border-radius:8px;border:2px solid #fff;box-shadow:0 0 0 1px #ead8e0;cursor:pointer;background:'+c+'" onclick="aplicarAlvoCor(\''+alvo+'\',\''+c+'\');document.getElementById(\'edAlvoCor\').value=\''+c+'\'"></button>';
+      });
+      html += '</div></div>';
+    }
+  }
+  html += '<div style="display:flex;gap:8px;margin-top:14px">';
+  html += '<button class="btn-save" style="flex:1" onclick="salvarAlvo(\''+alvo+'\')">💾 Salvar</button>';
+  html += '<button onclick="fecharEditorAlvo()" style="flex:1;padding:11px;background:#fff;color:var(--gray);border:1.5px solid #e0d0d8;border-radius:50px;font-size:13px;cursor:pointer;font-family:Outfit,sans-serif">Cancelar</button>';
+  html += '</div>';
+  area.innerHTML = html;
+  area.style.display = 'block';
+  area.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function fecharEditorAlvo(){
+  var area = document.getElementById('editorAlvoArea');
+  if(area){area.style.display='none';area.innerHTML='';}
+  atualizarTodasPreviews();
+}
+
+function aplicarAlvo(alvo){
+  var c1=document.getElementById('edAlvoC1');
+  var c2=document.getElementById('edAlvoC2');
+  var c3=document.getElementById('edAlvoC3');
+  var dir=document.getElementById('edAlvoDir');
+  var d={c1:c1.value,c2:c2.value,dir:dir?dir.value:'135deg'};
+  if(c3)d.c3=c3.value;
+  applyGradient(alvo,d);
+  atualizarTodasPreviews();
+}
+function aplicarAlvoCor(alvo,val){
+  var mapVar = {rose:'--rose', bg:'--bg', ink:'--ink'};
+  document.documentElement.style.setProperty(mapVar[alvo], val);
+  atualizarTodasPreviews();
+  // Também atualizar rose2 (rose escuro) se mudar rose
+  if(alvo==='rose'){
+    // Cria automaticamente uma versão um pouco mais clara como rose2
+    document.documentElement.style.setProperty('--rose2', clareiaCor(val,10));
+  }
+}
+function clareiaCor(hex,pct){
+  hex=hex.replace('#','');
+  var r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16);
+  r=Math.min(255,r+pct);g=Math.min(255,g+pct);b=Math.min(255,b+pct);
+  return '#'+[r,g,b].map(function(v){return v.toString(16).padStart(2,'0');}).join('');
+}
+
+function salvarAlvo(alvo){
+  if(['btn','hero','cta'].indexOf(alvo) >= 0){
+    var c1=document.getElementById('edAlvoC1');
+    var c2=document.getElementById('edAlvoC2');
+    var c3=document.getElementById('edAlvoC3');
+    var dir=document.getElementById('edAlvoDir');
+    var d={c1:c1.value,c2:c2.value,dir:dir?dir.value:'135deg'};
+    if(c3)d.c3=c3.value;
+    localStorage.setItem('grad_'+alvo,JSON.stringify(d));
+    applyGradient(alvo,d);
+    toast('✓ Gradiente salvo');
+  } else {
+    var mapVar = {rose:'--rose', bg:'--bg', ink:'--ink'};
+    var cor = document.getElementById('edAlvoCor').value;
+    document.documentElement.style.setProperty(mapVar[alvo], cor);
+    localStorage.setItem('clr_'+mapVar[alvo], cor);
+    if(alvo==='rose'){
+      var rose2 = clareiaCor(cor,10);
+      document.documentElement.style.setProperty('--rose2', rose2);
+      localStorage.setItem('clr_--rose2', rose2);
+    }
+    toast('✓ Cor salva');
+  }
+  fecharEditorAlvo();
+}
+
+function resetTudoVisual(){
+  abrirConfirmacao({
+    titulo:'↺ Restaurar visual padrão?',
+    descricao:'Todas as cores e gradientes voltarão ao padrão original do site.',
+    palavra:null,
+    botaoTxt:'Sim, restaurar',
+    onConfirm:function(){
+      // Resetar cores
+      Object.keys(DEFAULT_COLORS).forEach(function(v){
+        document.documentElement.style.setProperty(v,DEFAULT_COLORS[v]);
+        localStorage.removeItem('clr_'+v);
+      });
+      // Resetar gradientes
+      ['hero','cta','btn'].forEach(function(g){
+        localStorage.removeItem('grad_'+g);
+        applyGradient(g, DEFAULT_GRADS[g]);
+      });
+      atualizarTodasPreviews();
+      toast('↺ Tudo restaurado');
+    }
+  });
 }
 
 /* --- INICIALIZAÇÃO --- */
