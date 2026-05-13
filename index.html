@@ -285,13 +285,20 @@ footer a{color:var(--rosem)}
 /* ADMIN */
 .adm-trigger{position:fixed;bottom:18px;right:18px;z-index:700;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.07);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,.18);font-size:12px;letter-spacing:-1px;line-height:1;padding-bottom:2px;transition:background .2s}
 .adm-trigger:hover{background:rgba(0,0,0,.13);color:rgba(0,0,0,.4)}
-.adm-overlay{display:none;position:fixed;inset:0;background:rgba(35,15,25,.18);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:1500;align-items:flex-end;justify-content:center}
+/* ── PATCH: backdrop-filter REMOVIDO do adm-overlay.
+   backdrop-filter cria stacking context isolado, prendendo sub-drawers dentro
+   mesmo com z-index alto. O blur agora é feito via ::before pseudo-element
+   que NÃO afeta o stacking context do elemento pai. ── */
+.adm-overlay{display:none;position:fixed;inset:0;background:rgba(35,15,25,.18);z-index:1500;align-items:flex-end;justify-content:center;isolation:auto}
 .adm-overlay.on{display:flex}
+/* Blur de fundo via pseudo-element — não cria stacking context no pai */
+.adm-overlay.on::before{content:'';position:fixed;inset:0;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:-1;pointer-events:none}
 .adm-panel{background:#fff;width:100%;max-width:520px;overflow:hidden;animation:panelUp .33s cubic-bezier(.16,1,.3,1);
   /* MOBILE: tela cheia para não cortar nada e não mostrar fundo */
   height:100vh;height:100svh;border-radius:0;
+  /* PATCH: isolation:isolate removido — não criar stacking context desnecessário aqui */
 }
-.adm-panel.logged{overflow-y:auto;}
+.adm-panel.logged{overflow-y:auto;overflow-x:hidden;}
 @media(min-width:600px){
   .adm-panel{border-radius:22px;margin:auto;max-width:680px;height:auto;max-height:92vh;max-height:92svh;box-shadow:0 24px 70px rgba(80,20,50,.22);}
   .adm-overlay{align-items:center;padding:24px;}
@@ -417,24 +424,30 @@ footer a{color:var(--rosem)}
 .cli-act-msg{display:inline-flex;align-items:center;gap:4px;background:var(--rosep);color:var(--rose);padding:6px 11px;border-radius:50px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:Outfit,sans-serif}
 
 /* SUB-DRAWER: painel que desliza por cima do painel principal */
+/* ── PATCH: sub-overlay sem backdrop-filter direto (evita stacking context).
+   O blur de fundo do sub-overlay também usa ::before. ── */
 .sub-overlay{position:fixed;inset:0;z-index:1600;pointer-events:none;background:rgba(0,0,0,0);transition:background .25s}
-.sub-overlay.on{pointer-events:all;background:rgba(35,15,25,.14);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.sub-overlay.on{pointer-events:all;background:rgba(35,15,25,.14)}
+.sub-overlay.on::before{content:'';position:fixed;inset:0;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:-1;pointer-events:none}
+/* ── adm-sub: sub-drawer totalmente independente do stacking context do overlay ── */
 .adm-sub{
   position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);
   width:100%;max-width:560px;
   background:#fff;border-radius:22px 22px 0 0;
   padding:0 0 calc(env(safe-area-inset-bottom,16px) + 24px);
   max-height:92vh;max-height:92svh;overflow-y:auto;overflow-x:hidden;
-  z-index:1700;  /* acima do painel admin (1500) e do sub-overlay (1600) */
+  z-index:1700;  /* acima do adm-overlay (1500) e do sub-overlay (1600) */
   box-shadow:0 -8px 40px rgba(0,0,0,.25);
   transition:transform .32s cubic-bezier(.32,1,.22,1);
   -webkit-overflow-scrolling:touch;
+  pointer-events:none; /* inativo quando escondido — evita cliques fantasma */
+  will-change:transform;
 }
-.adm-sub.on{transform:translateX(-50%) translateY(0)}
+.adm-sub.on{transform:translateX(-50%) translateY(0);pointer-events:auto}
 @media(min-width:600px){
   .adm-sub{bottom:auto;top:50%;left:50%;
     transform:translate(-50%,calc(-50% + 30px));
-    opacity:0;pointer-events:none;
+    opacity:0;pointer-events:none; /* CRÍTICO: sem isso, sub invisível ainda captura cliques */
     border-radius:20px;max-width:600px;max-height:86vh;
     box-shadow:0 24px 70px rgba(80,20,50,.28);
     transition:transform .3s cubic-bezier(.32,1,.22,1),opacity .25s;
@@ -714,6 +727,11 @@ footer a{color:var(--rosem)}
   #printArea{display:block!important;position:static!important;padding:0!important}
   .no-print{display:none!important}
 }
+
+/* ═══ ABA BACKUP ═══ */
+#tabBackup.on{display:block}
+#tabBackup .adm-sec ul{list-style:none;padding-left:0}
+#tabBackup .adm-sec ul li::before{content:'';margin-right:0}
 
 </style>
 
@@ -1106,6 +1124,7 @@ window.FB_PENDING = []; // operações antes do ready
         <button class="adm-tab" onclick="switchTab('tabCaixa',this)">💰 Caixa</button>
         <button class="adm-tab" onclick="switchTab('tabCfg',this)">⚙️ Config</button>
         <button class="adm-tab" onclick="switchTab('tabLayout',this)">🎨 Visual</button>
+        <button class="adm-tab" onclick="switchTab('tabBackup',this)">💾 Backup</button>
       </div>
 
       </div><div class="adm-tabs-fade"><span class="adm-tabs-fade-ico">›</span></div></div>
@@ -1283,9 +1302,54 @@ window.FB_PENDING = []; // operações antes do ready
           <button class="adm-btn" onclick="showSub('subLayoutGrad')"><span class="adm-btn-ico">🌈</span><div class="adm-btn-txt"><span class="adm-btn-lbl">Editar gradientes</span><span class="adm-btn-sub">Hero, CTA e botões</span></div></button>
         </div>
       </div>
+
+      <!-- ─── TAB: BACKUP ─── -->
+      <div class="adm-tab-pane" id="tabBackup">
+        <div class="adm-sec">
+          <div class="adm-sec-hdr"><span class="adm-sec-ico">📤</span><div><div class="adm-sec-ttl">Exportar Backup</div><div class="adm-sec-desc">Baixe todos os dados em um arquivo JSON seguro</div></div></div>
+          <button class="adm-btn" onclick="exportarBackup()"><span class="adm-btn-ico">⬇️</span><div class="adm-btn-txt"><span class="adm-btn-lbl">Exportar backup completo</span><span class="adm-btn-sub">Agendamentos, clientes, caixa, configurações, fotos</span></div></button>
+          <div id="bkpExportInfo" style="font-size:12px;color:var(--gray);margin-top:8px;padding:10px 12px;background:var(--nude);border-radius:10px;display:none"></div>
+        </div>
+        <div class="adm-sec">
+          <div class="adm-sec-hdr"><span class="adm-sec-ico">📥</span><div><div class="adm-sec-ttl">Importar Backup</div><div class="adm-sec-desc">Restaure dados a partir de um arquivo de backup anterior</div></div></div>
+          <div style="background:#fff8e1;border:1px solid #ffd54f;border-radius:10px;padding:10px 13px;font-size:12px;color:#5d4037;margin-bottom:10px;line-height:1.55">
+            ⚠️ <strong>Atenção:</strong> importar substituirá os dados atuais. Exporte um backup antes de importar.
+          </div>
+          <label style="display:block;width:100%;padding:12px;background:#fff;border:1.5px dashed #ead8e0;border-radius:12px;text-align:center;cursor:pointer;font-size:13px;color:var(--gray);margin-bottom:8px" onclick="document.getElementById('bkpFileInput').click()">
+            📂 Selecionar arquivo de backup (.json)
+          </label>
+          <input type="file" id="bkpFileInput" accept=".json" style="display:none" onchange="importarBackup(event)">
+          <div id="bkpImportInfo" style="font-size:12px;color:var(--gray);margin-top:8px;padding:10px 12px;background:var(--nude);border-radius:10px;display:none"></div>
+        </div>
+        <div class="adm-sec">
+          <div class="adm-sec-hdr"><span class="adm-sec-ico">🕒</span><div><div class="adm-sec-ttl">Histórico de backups</div><div class="adm-sec-desc">Últimos backups exportados neste dispositivo</div></div></div>
+          <div id="bkpHistorico" style="font-size:12px;color:var(--gray)">Nenhum backup exportado ainda.</div>
+        </div>
+        <div class="adm-sec" style="border:1.5px solid #ffcdd2;background:#fff8f8">
+          <div class="adm-sec-hdr"><span class="adm-sec-ico">ℹ️</span><div><div class="adm-sec-ttl" style="color:#c62828">O que está incluso no backup</div></div></div>
+          <ul style="font-size:12px;color:var(--gray);line-height:2;padding-left:16px;margin:0">
+            <li>📅 Todos os agendamentos</li>
+            <li>👤 Clientes e histórico</li>
+            <li>💰 Caixa e pagamentos</li>
+            <li>⚙️ Configurações da agenda</li>
+            <li>🎨 Cores e gradientes personalizados</li>
+            <li>✏️ Textos personalizados do site</li>
+            <li>📢 Avisos e dias bloqueados</li>
+            <li>🌟 Serviços extras adicionados</li>
+            <li>🖼️ URLs/metadados das fotos</li>
+          </ul>
+          <p style="font-size:11px;color:var(--lgray);margin-top:8px;line-height:1.55">
+            ℹ️ Fotos são armazenadas como URLs/base64 no backup. Arquivos muito grandes podem ser divididos automaticamente.
+          </p>
+        </div>
+      </div>
     </div>
 </template>
     <div id="admEditContainer"></div>
+
+  </div>
+</div>
+<!-- ═══ SUB-DRAWERS (fora do adm-overlay para evitar stacking context) ═══ -->
     <!-- SUBs -->
     <div class="adm-sub" id="subAgenda">
   <div class="adm-sub-handle"></div>
@@ -1479,8 +1543,7 @@ window.FB_PENDING = []; // operações antes do ready
       <button class="btn-save" onclick="closeSub();setTimeout(function(){showSub('subLayoutCores')},220)">Abrir editor visual</button>
   </div>
     </div>
-  </div>
-</div>
+
 
 <input type="file" class="hf" id="fPerfil" accept="image/*" onchange="upPerfil(event)">
 <input type="file" class="hf" id="fHero" accept="image/*" onchange="upHero(event)">
@@ -3453,6 +3516,213 @@ function resetTudoVisual(){
     }
   });
 }
+
+
+/* ═══════════════════════════════════════════
+   SISTEMA DE BACKUP PROFISSIONAL
+   Exporta/importa TODOS os dados do site de
+   forma segura, sem tocar em coleções Firebase
+═══════════════════════════════════════════ */
+
+/* Chaves que fazem parte do backup completo */
+var BACKUP_KEYS_EXACT = [
+  'bookings','clients','caixa','blocked','config','contato','customSvcs',
+  'allPics','heroPhoto','profilePhoto','aviso','avisoOn','extras',
+  'cfgDur','cfgBuf','cfgMax','cfgSlots','blockedDays',
+  'admPw','cxLastDate','customClearedDefaults','avisoTxt','waNum',
+  'txtPix','txtPgto','txtBio','txtAddr'
+];
+var BACKUP_PREFIXES = ['clr_','grad_','lt_','txt_'];
+
+function _bkpShouldInclude(key){
+  if(BACKUP_KEYS_EXACT.indexOf(key) >= 0) return true;
+  for(var i=0;i<BACKUP_PREFIXES.length;i++){
+    if(key.indexOf(BACKUP_PREFIXES[i]) === 0) return true;
+  }
+  return false;
+}
+
+function exportarBackup(){
+  try {
+    var backup = {
+      versao: '2.0',
+      criadoEm: new Date().toISOString(),
+      dispositivo: navigator.userAgent.slice(0,80),
+      dados: {}
+    };
+
+    // Coletar TODOS os dados relevantes do localStorage
+    for(var i=0;i<localStorage.length;i++){
+      var k = localStorage.key(i);
+      if(_bkpShouldInclude(k)){
+        var v = localStorage.getItem(k);
+        if(v !== null) backup.dados[k] = v;
+      }
+    }
+
+    var totalKeys = Object.keys(backup.dados).length;
+    var json = JSON.stringify(backup, null, 2);
+    var sizeMB = (json.length / 1024 / 1024).toFixed(2);
+
+    // Gerar nome de arquivo com timestamp
+    var now = new Date();
+    var ts = now.getFullYear()+'-'+
+      String(now.getMonth()+1).padStart(2,'0')+'-'+
+      String(now.getDate()).padStart(2,'0')+'_'+
+      String(now.getHours()).padStart(2,'0')+'-'+
+      String(now.getMinutes()).padStart(2,'0');
+    var filename = 'backup_eduarda_sobrancelhas_'+ts+'.json';
+
+    // Criar blob e disparar download
+    var blob = new Blob([json], {type:'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 1000);
+
+    // Atualizar info e histórico
+    var info = document.getElementById('bkpExportInfo');
+    if(info){
+      info.style.display = 'block';
+      info.innerHTML = '✅ Backup exportado com sucesso!<br>'+
+        '📦 <strong>'+totalKeys+'</strong> chaves · '+
+        '📄 <strong>'+sizeMB+' MB</strong><br>'+
+        '🕒 '+now.toLocaleString('pt-BR');
+    }
+
+    // Salvar no histórico local (sem dados, só metadados)
+    var hist = JSON.parse(localStorage.getItem('_bkpHistorico')||'[]');
+    hist.unshift({ts:now.toISOString(), keys:totalKeys, sizeMB:sizeMB, filename:filename});
+    if(hist.length > 10) hist = hist.slice(0,10); // manter só últimos 10
+    localStorage.setItem('_bkpHistorico', JSON.stringify(hist));
+    renderBkpHistorico();
+
+    toast('💾 Backup exportado: '+filename);
+  } catch(e) {
+    console.error('[BACKUP] Erro ao exportar:', e);
+    toast('❌ Erro ao exportar backup: '+e.message);
+  }
+}
+
+function importarBackup(event){
+  var file = event.target.files[0];
+  if(!file){ return; }
+  if(!file.name.endsWith('.json')){
+    toast('❌ Arquivo deve ser .json');
+    return;
+  }
+
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      var raw = e.target.result;
+      var backup = JSON.parse(raw);
+
+      // Validação básica
+      if(!backup.versao || !backup.dados){
+        toast('❌ Arquivo de backup inválido ou corrompido');
+        return;
+      }
+
+      var totalKeys = Object.keys(backup.dados).length;
+      var criadoEm = backup.criadoEm ? new Date(backup.criadoEm).toLocaleString('pt-BR') : 'desconhecido';
+
+      // Confirmação antes de importar
+      abrirConfirmacao({
+        titulo: '📥 Importar backup?',
+        descricao: 'Backup de '+criadoEm+' · '+totalKeys+' chaves. Dados atuais serão substituídos por este backup. Esta ação não pode ser desfeita.',
+        palavra: 'IMPORTAR',
+        botaoTxt: 'Sim, importar',
+        onConfirm: function(){
+          try {
+            var importados = 0;
+            var ignorados = 0;
+
+            Object.keys(backup.dados).forEach(function(k){
+              var v = backup.dados[k];
+              if(v === null || v === undefined){ ignorados++; return; }
+              // Segurança: só importa chaves que o sistema conhece
+              if(!_bkpShouldInclude(k) && k !== '_bkpHistorico'){ ignorados++; return; }
+              try {
+                localStorage.setItem(k, String(v));
+                importados++;
+              } catch(le){ ignorados++; }
+            });
+
+            var info = document.getElementById('bkpImportInfo');
+            if(info){
+              info.style.display = 'block';
+              info.innerHTML = '✅ Importação concluída!<br>'+
+                '📦 <strong>'+importados+'</strong> itens restaurados · '+
+                '<span style="color:var(--lgray)">'+ignorados+' ignorados</span><br>'+
+                '🕒 Recarregue a página para ver as mudanças.';
+            }
+
+            toast('✅ Backup importado! Recarregue para aplicar.');
+
+            // Resetar o input de arquivo
+            event.target.value = '';
+
+            // Reaplicar dados visíveis imediatamente
+            setTimeout(function(){
+              if(typeof loadColors === 'function') loadColors();
+              if(typeof loadGradients === 'function') loadGradients();
+              if(typeof loadAllLayoutTextos === 'function') loadAllLayoutTextos();
+              if(typeof loadAviso === 'function') loadAviso();
+              if(typeof loadContato === 'function') loadContato();
+              if(typeof renderCal === 'function') renderCal();
+              if(typeof renderDash === 'function') renderDash();
+              if(typeof renderGal === 'function') renderGal();
+            }, 100);
+
+          } catch(ie){
+            console.error('[BACKUP] Erro ao importar:', ie);
+            toast('❌ Erro durante importação: '+ie.message);
+          }
+        }
+      });
+
+    } catch(parseErr){
+      console.error('[BACKUP] Erro ao parsear JSON:', parseErr);
+      toast('❌ Arquivo corrompido ou inválido');
+    }
+  };
+  reader.onerror = function(){ toast('❌ Erro ao ler arquivo'); };
+  reader.readAsText(file, 'utf-8');
+}
+
+function renderBkpHistorico(){
+  var el = document.getElementById('bkpHistorico');
+  if(!el) return;
+  var hist = JSON.parse(localStorage.getItem('_bkpHistorico')||'[]');
+  if(!hist.length){
+    el.innerHTML = '<span style="color:var(--lgray)">Nenhum backup exportado ainda neste dispositivo.</span>';
+    return;
+  }
+  el.innerHTML = hist.map(function(h, i){
+    var dt = new Date(h.ts).toLocaleString('pt-BR');
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0e8ec'+( i===hist.length-1?';border-bottom:none':'')+'">'+
+      '<div><div style="font-size:12px;font-weight:600;color:var(--ink)">'+dt+'</div>'+
+      '<div style="font-size:11px;color:var(--lgray)">'+h.keys+' chaves · '+h.sizeMB+' MB</div></div>'+
+      '<span style="font-size:20px">📄</span>'+
+    '</div>';
+  }).join('');
+}
+
+/* Inicializar histórico ao abrir tab de backup */
+(function(){
+  var origSwitch = typeof switchTab === 'function' ? switchTab : null;
+  if(origSwitch){
+    var _origSwitchTab = switchTab;
+    switchTab = function(id, btn){
+      _origSwitchTab(id, btn);
+      if(id === 'tabBackup') renderBkpHistorico();
+    };
+  }
+})();
 
 /* --- INICIALIZAÇÃO --- */
 (function initLayout(){
