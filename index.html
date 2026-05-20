@@ -733,6 +733,29 @@ footer a{color:var(--rosem)}
 #tabBackup .adm-sec ul{list-style:none;padding-left:0}
 #tabBackup .adm-sec ul li::before{content:'';margin-right:0}
 
+/* ═══ MODO PORTFÓLIO (bookingEnabled=false) ═══
+   Esconde APENAS o fluxo público de agendamento.
+   Toda a lógica/admin continua intacta. Reversível 100%. */
+body.portfolio-mode #agenda{display:none!important}
+body.portfolio-mode .hdr .btn-hdr{display:none!important}
+body.portfolio-mode .hero-btns .btn-hero{display:none!important}
+/* CTA de seção "Agende sua sessão" não some, mas o calendário público sim (acima) */
+
+/* Toggle modo agendamento no admin */
+.bk-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;background:var(--nude);border-radius:12px;margin-bottom:10px}
+.bk-toggle-row .bk-toggle-info{flex:1}
+.bk-toggle-row .bk-toggle-info b{display:block;font-size:14px;color:var(--ink)}
+.bk-toggle-row .bk-toggle-info small{font-size:12px;color:var(--gray)}
+.bk-switch{position:relative;width:52px;height:30px;flex:none;cursor:pointer}
+.bk-switch input{opacity:0;width:0;height:0;position:absolute}
+.bk-switch .bk-slider{position:absolute;inset:0;background:#ccc;border-radius:30px;transition:.25s}
+.bk-switch .bk-slider:before{content:'';position:absolute;width:24px;height:24px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.bk-switch input:checked+.bk-slider{background:#4caf50}
+.bk-switch input:checked+.bk-slider:before{transform:translateX(22px)}
+.bk-status-pill{display:inline-block;padding:5px 12px;border-radius:50px;font-size:12px;font-weight:600;margin-top:8px}
+.bk-status-pill.on{background:#e8f5e9;color:#2e7d32}
+.bk-status-pill.off{background:#fff3e0;color:#ef6c00}
+
 </style>
 
 <!-- Firebase SDK -->
@@ -764,7 +787,7 @@ window.FB_PENDING = []; // operações antes do ready
     'bookings','clients','caixa','blocked','config','contato','customSvcs',
     'allPics','heroPhoto','profilePhoto','aviso','avisoOn','extras',
     'cfgDur','cfgBuf','cfgMax','cfgSlots','blockedDays',
-    'admPw','cxLastDate','customClearedDefaults'
+    'admPw','cxLastDate','customClearedDefaults','bookingEnabled'
   ];
   // Prefixos que sincronizam (qualquer chave que começa com)
   var FB_PREFIXES = ['clr_','grad_','lt_','txt_'];
@@ -907,6 +930,7 @@ window.FB_PENDING = []; // operações antes do ready
 <header class="hdr" id="hdr">
   <div class="logo"><em>Eduarda</em> Sobrancelhas</div>
   <a class="btn-hdr" href="#agenda">Agendar</a>
+  <a class="btn-hdr" id="hdrWaBtn" href="https://wa.me/558189593981?text=Ol%C3%A1%20Eduarda!%20Vim%20pelo%20site%20%F0%9F%8C%B8" target="_blank" style="display:none">Falar no WhatsApp</a>
 </header>
 
 <section id="hero">
@@ -923,6 +947,10 @@ window.FB_PENDING = []; // operações antes do ready
       <a class="btn-hero" href="#agenda">
         <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H5V8h14v13z"/></svg>
         <span data-editable="heroBtnCta">Reservar meu horário</span>
+      </a>
+      <a class="btn-hero" id="heroWaBtn" href="https://wa.me/558189593981?text=Ol%C3%A1%20Eduarda!%20Vim%20pelo%20site%20%F0%9F%8C%B8" target="_blank" style="display:none">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <span>Falar no WhatsApp</span>
       </a>
       <a class="hero-link" href="#servicos" data-editable="heroLink">Conhecer os serviços ↓</a>
     </div>
@@ -1258,6 +1286,20 @@ window.FB_PENDING = []; // operações antes do ready
 
       <!-- ─── TAB: CONFIGURAÇÕES ─── -->
       <div class="adm-tab-pane" id="tabCfg">
+        <div class="adm-sec" style="border:1.5px solid rgba(76,175,80,.25)">
+          <div class="adm-sec-hdr"><span class="adm-sec-ico">🔓</span><div><div class="adm-sec-ttl">Modo Agendamento</div><div class="adm-sec-desc">Ativa ou desativa o agendamento público do site</div></div></div>
+          <div class="bk-toggle-row">
+            <div class="bk-toggle-info">
+              <b>Permitir agendamento online</b>
+              <small>Desligado: o site fica em modo portfólio (só WhatsApp e Instagram). Ligado: clientes agendam normalmente.</small>
+            </div>
+            <label class="bk-switch">
+              <input type="checkbox" id="bkModeToggle" onchange="toggleBookingMode(this.checked)">
+              <span class="bk-slider"></span>
+            </label>
+          </div>
+          <span class="bk-status-pill off" id="bkModePill">📷 Modo portfólio ativo</span>
+        </div>
         <div class="adm-sec">
           <div class="adm-sec-hdr"><span class="adm-sec-ico">📅</span><div><div class="adm-sec-ttl">Agendamentos</div><div class="adm-sec-desc">Horários e agenda</div></div></div>
           <button class="adm-btn" onclick="showSub('subAgenda')"><span class="adm-btn-ico">🕐</span><div class="adm-btn-txt"><span class="adm-btn-lbl">Configurar agenda</span><span class="adm-btn-sub">Duração, vagas, horários disponíveis</span></div></button>
@@ -1637,6 +1679,48 @@ function bootApp(){
   loadAviso();
   renderExtras();
   renderCal();
+  applyBookingMode();
+}
+
+/* ═══ MODO AGENDAMENTO / PORTFÓLIO ═══
+   Não remove nenhuma lógica: apenas alterna visibilidade pública.
+   Padrão = portfólio (false). Reversível com 1 clique no admin. */
+function isBookingEnabled(){
+  return localStorage.getItem('bookingEnabled') === 'true';
+}
+function applyBookingMode(){
+  var on = isBookingEnabled();
+  document.body.classList.toggle('portfolio-mode', !on);
+
+  // Header: alterna botão "Agendar" x "Falar no WhatsApp"
+  var hdrAg = document.querySelector('.hdr .btn-hdr[href="#agenda"]');
+  var hdrWa = document.getElementById('hdrWaBtn');
+  if(hdrAg) hdrAg.style.display = on ? '' : 'none';
+  if(hdrWa) hdrWa.style.display = on ? 'none' : '';
+
+  // Hero: alterna botão de reservar x WhatsApp
+  var heroWa = document.getElementById('heroWaBtn');
+  if(heroWa) heroWa.style.display = on ? 'none' : '';
+
+  // Botões de serviço: trocam só o texto (a ação já é WhatsApp)
+  document.querySelectorAll('.btn-wa-svc').forEach(function(b){
+    var svg = b.querySelector('svg');
+    var txt = on ? 'Agendar pelo WhatsApp' : 'Falar no WhatsApp';
+    b.innerHTML = (svg ? svg.outerHTML : '') + txt;
+  });
+
+  // Atualiza o estado do toggle/admin se presente
+  var tg = document.getElementById('bkModeToggle');
+  if(tg) tg.checked = on;
+  var pill = document.getElementById('bkModePill');
+  if(pill){
+    pill.className = 'bk-status-pill ' + (on ? 'on' : 'off');
+    pill.textContent = on ? '✅ Agendamento online ativo' : '📷 Modo portfólio ativo';
+  }
+}
+function toggleBookingMode(checked){
+  localStorage.setItem('bookingEnabled', checked ? 'true' : 'false');
+  applyBookingMode();
 }
 window.addEventListener('DOMContentLoaded',function(){
   if(window.FB_READY) bootApp();
